@@ -9,13 +9,13 @@ namespace DataCommandCenter.Tests
     public class UnitTest1
     {
         [TestMethod]
-        public void TestMethod1()
+        public async Task TestMethod1()
         {
             var context = new DataCommandCenterContext();
 
             var a = new DCCRepository(context);
 
-            var b = a.GetServers();
+            var b = await a.GetServers();
 
             var c = b;
         }
