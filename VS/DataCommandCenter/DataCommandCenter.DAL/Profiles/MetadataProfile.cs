@@ -12,7 +12,6 @@ namespace DataCommandCenter.DAL.Profiles
         public MetadataProfile()
         {
             CreateMap<Models.Server, DTO.ServerDTO>()
-                //.ForAllMembers(opt => opt.Ignore())
                 .ForMember(dest => dest.ServerType, opt => opt.MapFrom(src => src.ServerType.ServerType1));
         }
     }

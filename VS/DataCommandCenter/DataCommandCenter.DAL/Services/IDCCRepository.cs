@@ -9,6 +9,16 @@ namespace DataCommandCenter.DAL.Services
 {
     public interface IDCCRepository
     {
+        public class SearchObjectTypes
+        {
+            bool SearchServers { get; set; } = true;
+            bool SearchSQLDatabases { get; set; } = true;
+            bool SearchSQLObjects { get; set; } = true;
+            bool SearchSQLColumns { get; set; } = true;
+        }
+
         Task<IEnumerable<Server>> GetServers();
+
+        Task<IEnumerable<ObjectSearch>> SearchObjects(String searchQuery, SearchObjectTypes? options = null); 
     }
 }

@@ -16,6 +16,7 @@ namespace DataCommandCenter.DAL.Models
         {
         }
 
+        public virtual DbSet<ObjectSearch> ObjectSearches { get; set; } = null!;
         public virtual DbSet<Server> Servers { get; set; } = null!;
         public virtual DbSet<ServerType> ServerTypes { get; set; } = null!;
         public virtual DbSet<SqlColumn> SqlColumns { get; set; } = null!;
@@ -36,11 +37,28 @@ namespace DataCommandCenter.DAL.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ObjectSearch>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("ObjectSearch", "meta");
+
+                entity.Property(e => e.DisplayText).HasMaxLength(1263);
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.ObjectType).HasMaxLength(4000);
+
+                entity.Property(e => e.SearchText).HasMaxLength(869);
+            });
+
             modelBuilder.Entity<Server>(entity =>
             {
                 entity.ToTable("Server", "meta");
 
                 entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Description).HasMaxLength(255);
 
                 entity.Property(e => e.ServerInstance).HasMaxLength(50);
 
@@ -79,6 +97,8 @@ namespace DataCommandCenter.DAL.Models
 
                 entity.Property(e => e.DataType).HasMaxLength(50);
 
+                entity.Property(e => e.Description).HasMaxLength(255);
+
                 entity.Property(e => e.ObjectId).HasColumnName("ObjectID");
 
                 entity.HasOne(d => d.Object)
@@ -106,6 +126,8 @@ namespace DataCommandCenter.DAL.Models
                     .HasColumnName("DataSizeMB");
 
                 entity.Property(e => e.DatabaseName).HasMaxLength(128);
+
+                entity.Property(e => e.Description).HasMaxLength(255);
 
                 entity.Property(e => e.LogSizeMb)
                     .HasColumnType("numeric(38, 6)")
@@ -204,6 +226,8 @@ namespace DataCommandCenter.DAL.Models
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.DatabaseId).HasColumnName("DatabaseID");
+
+                entity.Property(e => e.Description).HasMaxLength(255);
 
                 entity.Property(e => e.ObjectName).HasMaxLength(255);
 

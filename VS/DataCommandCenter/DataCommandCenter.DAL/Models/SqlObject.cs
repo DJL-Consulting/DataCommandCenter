@@ -19,6 +19,7 @@ namespace DataCommandCenter.DAL.Models
         public int? Rows { get; set; }
         public double? SizeMb { get; set; }
         public string? ObjectDefinition { get; set; }
+        public string? Description { get; set; }
 
         public virtual SqlDatabase? Database { get; set; }
         public virtual ICollection<SqlColumn> SqlColumns { get; set; }
