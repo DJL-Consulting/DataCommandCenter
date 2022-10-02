@@ -5,6 +5,8 @@ using DataCommandCenter.DAL.DTO;
 using DataCommandCenter.DAL.Services;
 using DataCommandCenter.DAL.Models;
 using Microsoft.AspNetCore.Hosting.Server;
+using static DataCommandCenter.DAL.Services.IDCCRepository;
+using Microsoft.AspNetCore.Cors;
 
 namespace DataCommandCenter.API.Controllers
 {
@@ -27,21 +29,29 @@ namespace DataCommandCenter.API.Controllers
 
         [HttpGet]
         [Route("GetServers")]
-        public async Task<ActionResult<IEnumerable<ObjectSearch>>> GetServers()
+        public async Task<ActionResult<IEnumerable<ServerDTO>>> GetServers()
         {
             var servers = await _repository.GetServers();
 
             return Ok(_mapper.Map<IEnumerable<ServerDTO>>(servers));   
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("SearchObjects")]
-        public async Task<ActionResult<IEnumerable<ObjectSearch>>> SearchObjects(String queryString)
+        public async Task<ActionResult<IEnumerable<ObjectSearch>>> SearchObjects(SearchObjectTypes options)
         {
-            var objects = await _repository.SearchObjects(queryString);
+            var objects = await _repository.SearchObjects(options);
 
             return Ok(objects);
         }
 
+        [HttpPost]
+        [Route("GetMetadata")]
+        public async Task<ActionResult<IEnumerable<ObjectSearch>>> GetMetadata(ObjectSearch selectedItem)
+        {
+            var objects = await _repository.GetMetadataForObject(selectedItem);
+
+            return Ok(objects);
+        }
     }
 }

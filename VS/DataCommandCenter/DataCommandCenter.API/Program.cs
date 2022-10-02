@@ -59,6 +59,12 @@ builder.Services.AddSwaggerGen(setupAction =>
 
 });
 
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+{
+    builder.WithOrigins(" * ").AllowAnyMethod().AllowAnyHeader();
+}));
+
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 //builder.Services.AddDbContext
@@ -76,6 +82,9 @@ builder.Services.AddApiVersioning(setupAction =>
 });
 
 var app = builder.Build();
+
+app.UseCors("corsapp");
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

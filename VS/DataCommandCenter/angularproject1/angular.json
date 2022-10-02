@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "DataCommandCenter.Web": {
+    "angularproject1": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/data-command-center.web",
+            "outputPath": "dist/angularproject1",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -23,16 +23,9 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css",
-              "node_modules/bootstrap/dist/css/bootstrap.css",
-              "node_modules/bootstrap/dist/css/bootstrap-utilities.css",
-              "node_modules/vis/dist/vis.min.css"
+              "src/styles.css"
             ],
-            "scripts": [
-              "node_modules/jquery/dist/jquery.js",
-              "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
-              "node_modules/vis/dist/vis.min.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -71,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "DataCommandCenter.Web:build:production"
+              "browserTarget": "angularproject1:build:production"
             },
             "development": {
-              "browserTarget": "DataCommandCenter.Web:build:development"
+              "browserTarget": "angularproject1:build:development"
             }
           },
           "defaultConfiguration": "development",
@@ -85,7 +78,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "DataCommandCenter.Web:build"
+            "browserTarget": "angularproject1:build"
           }
         },
         "test": {

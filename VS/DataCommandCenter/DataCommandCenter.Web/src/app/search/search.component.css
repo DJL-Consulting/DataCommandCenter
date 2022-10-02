@@ -1,0 +1,14 @@
+.optionButton {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+/* whitesmoke; floralwhite;*/
+.searchOptions {
+  background-color: floralwhite;
+  color: #333333;
+}
+
+.searchOption {
+  padding-left: 10px;
+  padding-right: 10px;
+}

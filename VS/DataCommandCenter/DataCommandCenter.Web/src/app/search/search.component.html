@@ -1,0 +1,79 @@
+<br />
+<div class="container">
+  <div class="row">
+    <div class="col-8 pr-1">
+      <div class="ng-autocomplete" style="width: 100%;">
+        <ng-autocomplete [data]="searchResult"
+                         [searchKeyword]="keyword"
+                         placeholder="Search for an Object..."
+                         (selected)='searchSelectEvent($event)'
+                         (inputChanged)='searchChangeSearch($event)'
+                         [itemTemplate]="itemTemplate"
+                         [notFoundTemplate]="notFoundTemplate">
+        </ng-autocomplete>
+
+        <ng-template #itemTemplate let-item>
+          <a [class]="setClass(item)" [innerHTML]="formatDisplay(item)"></a>
+        </ng-template>
+
+        <ng-template #notFoundTemplate let-notFound>
+          <div [innerHTML]="notFound"></div>
+        </ng-template>
+      </div>
+    </div>
+    <div class="col-4 floatleft align-text-middle" style="padding-left:0px;">
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle optionButton" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i onclick="ShowSearchOptions();" class="fa fa-search-plus fa-lg align-text-middle"></i> Search Options
+        </button>
+        <div class="dropdown-menu searchOptions" aria-labelledby="dropdownMenuButton">
+          <div class="text-center"><b>Search In:</b></div>
+          <div class="dropdown-divider"></div>
+
+          <div class="searchOption">
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault"  [checked]='searchSettings.Servers' (change)="searchSettings.Servers = !searchSettings.Servers">
+              <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-server"></i> Servers</label>
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [checked]='searchSettings.Databases' (change)="searchSettings.Databases = !searchSettings.Databases">
+              <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-database"></i> Databases</label>
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [checked]='searchSettings.Tables' (change)="searchSettings.Tables = !searchSettings.Tables">
+              <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-table"></i> Tables</label>
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [checked]='searchSettings.Views' (change)="searchSettings.Views = !searchSettings.Views">
+              <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-table"></i> Views</label>
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [checked]='searchSettings.ProgrammableObjects' (change)="searchSettings.ProgrammableObjects = !searchSettings.ProgrammableObjects">
+              <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-gear"></i> Procedures/Functions/Triggers</label>
+            </div>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault"  [checked]='searchSettings.Columns' (change)="searchSettings.Columns = !searchSettings.Columns">
+              <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-pencil"></i> Columns</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      
+    </div>
+
+  </div>
+
+
+</div>
+
+<br />
+<img src='/assets/images/sql.jpg' width="50" height="50" />
+<div #network style="width: 80vw; height: 80vh; border: 1px solid lightgray; "></div>

@@ -1,5 +1,5 @@
 {
-  "name": "data-command-center.web",
+  "name": "angularproject1",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -19,22 +19,16 @@
     "@angular/platform-browser": "^14.0.0",
     "@angular/platform-browser-dynamic": "^14.0.0",
     "@angular/router": "^14.0.0",
-    "angular-ng-autocomplete": "^2.0.12",
-    "bootstrap": "^5.2.1",
-    "font-awesome": "^4.7.0",
-    "jest-editor-support": "*",
-    "jquery": "^3.6.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
-    "vis": "^4.21.0-EOL",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.11.4",
+    "jest-editor-support": "*"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.2.1",
     "@angular/cli": "~14.2.1",
     "@angular/compiler-cli": "^14.0.0",
     "@types/jasmine": "~4.0.0",
-    "@types/vis": "^4.21.24",
     "jasmine-core": "~4.3.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",

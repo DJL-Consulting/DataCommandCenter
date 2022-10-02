@@ -11,14 +11,24 @@ namespace DataCommandCenter.DAL.Services
     {
         public class SearchObjectTypes
         {
-            bool SearchServers { get; set; } = true;
-            bool SearchSQLDatabases { get; set; } = true;
-            bool SearchSQLObjects { get; set; } = true;
-            bool SearchSQLColumns { get; set; } = true;
+            public string QueryString { get; set; }
+            public bool Servers { get; set; }
+
+            public bool Databases { get; set; }
+
+            public bool Tables { get; set; }
+
+            public bool Views { get; set; }
+
+            public bool ProgrammableObjects { get; set; }
+
+            public bool Columns { get; set; }
         }
 
         Task<IEnumerable<Server>> GetServers();
 
-        Task<IEnumerable<ObjectSearch>> SearchObjects(String searchQuery, SearchObjectTypes? options = null); 
+        Task<IEnumerable<ObjectSearch>> SearchObjects(SearchObjectTypes? options = null);
+        Task<IEnumerable<ObjectSearch>> GetMetadataForObject(ObjectSearch SelectedItem);
+
     }
 }
