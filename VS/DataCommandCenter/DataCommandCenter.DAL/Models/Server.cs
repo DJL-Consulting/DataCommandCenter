@@ -17,7 +17,9 @@ namespace DataCommandCenter.DAL.Models
         public string? Version { get; set; }
         public bool? PullMetadata { get; set; }
         public string? Description { get; set; }
+        public int? HeaderId { get; set; }
 
+        public virtual Header? Header { get; set; }
         public virtual ServerType? ServerType { get; set; }
         public virtual ICollection<SqlDatabase> SqlDatabases { get; set; }
     }

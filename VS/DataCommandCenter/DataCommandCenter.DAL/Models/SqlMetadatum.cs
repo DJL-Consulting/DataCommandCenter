@@ -5,6 +5,10 @@ namespace DataCommandCenter.DAL.Models
 {
     public partial class SqlMetadatum
     {
+        public int ServerId { get; set; }
+        public int DatabaseId { get; set; }
+        public int ObjectId { get; set; }
+        public int ColumnId { get; set; }
         public string? ServerName { get; set; }
         public string ServerInstance { get; set; } = null!;
         public string? Version { get; set; }

@@ -13,6 +13,9 @@ namespace DataCommandCenter.DAL.Profiles
         {
             CreateMap<Models.Server, DTO.ServerDTO>()
                 .ForMember(dest => dest.ServerType, opt => opt.MapFrom(src => src.ServerType.ServerType1));
+            CreateMap<Models.SqlDatabase, DTO.DatabaseDTO>();
+            CreateMap<Models.SqlObject, DTO.ObjectDTO>();
+            CreateMap<Models.SqlColumn, DTO.ColumnDTO>();
         }
     }
 }

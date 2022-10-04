@@ -24,7 +24,9 @@ namespace DataCommandCenter.DAL.Models
         public decimal? LogSizeMb { get; set; }
         public bool? PullMetadata { get; set; }
         public string? Description { get; set; }
+        public int? HeaderId { get; set; }
 
+        public virtual Header? Header { get; set; }
         public virtual Server? Server { get; set; }
         public virtual ICollection<SqlDatabaseHistory> SqlDatabaseHistories { get; set; }
         public virtual ICollection<SqlObject> SqlObjects { get; set; }

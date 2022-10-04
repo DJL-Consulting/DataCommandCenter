@@ -20,8 +20,10 @@ namespace DataCommandCenter.DAL.Models
         public double? SizeMb { get; set; }
         public string? ObjectDefinition { get; set; }
         public string? Description { get; set; }
+        public int? HeaderId { get; set; }
 
         public virtual SqlDatabase? Database { get; set; }
+        public virtual Header? Header { get; set; }
         public virtual ICollection<SqlColumn> SqlColumns { get; set; }
         public virtual ICollection<SqlTableHistory> SqlTableHistories { get; set; }
     }

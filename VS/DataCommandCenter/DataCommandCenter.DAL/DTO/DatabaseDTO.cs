@@ -22,8 +22,6 @@ namespace DataCommandCenter.DAL.DTO
         public decimal? LogSizeMb { get; set; }
         public bool? PullMetadata { get; set; }
         public string? Description { get; set; }
-
-        public virtual Server? Server { get; set; }
-        public virtual ICollection<SqlDatabaseHistory> SqlDatabaseHistories { get; set; }
+        public ICollection<Property>? MetadataDictionary { get; set; }
     }
 }

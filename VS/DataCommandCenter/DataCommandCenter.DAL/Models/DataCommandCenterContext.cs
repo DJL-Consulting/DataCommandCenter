@@ -16,7 +16,11 @@ namespace DataCommandCenter.DAL.Models
         {
         }
 
+        public virtual DbSet<Header> Headers { get; set; } = null!;
+        public virtual DbSet<LineageFlow> LineageFlows { get; set; } = null!;
         public virtual DbSet<ObjectSearch> ObjectSearches { get; set; } = null!;
+        public virtual DbSet<Property> Properties { get; set; } = null!;
+        public virtual DbSet<Query> Queries { get; set; } = null!;
         public virtual DbSet<Server> Servers { get; set; } = null!;
         public virtual DbSet<ServerType> ServerTypes { get; set; } = null!;
         public virtual DbSet<SqlColumn> SqlColumns { get; set; } = null!;
@@ -24,7 +28,9 @@ namespace DataCommandCenter.DAL.Models
         public virtual DbSet<SqlDatabaseHistory> SqlDatabaseHistories { get; set; } = null!;
         public virtual DbSet<SqlMetadatum> SqlMetadata { get; set; } = null!;
         public virtual DbSet<SqlObject> SqlObjects { get; set; } = null!;
+        public virtual DbSet<SqlObjectMetadatum> SqlObjectMetadata { get; set; } = null!;
         public virtual DbSet<SqlTableHistory> SqlTableHistories { get; set; } = null!;
+        public virtual DbSet<SsisPackageHeader> SsisPackageHeaders { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -37,6 +43,26 @@ namespace DataCommandCenter.DAL.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Header>(entity =>
+            {
+                entity.ToTable("Header", "meta");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+            });
+
+            modelBuilder.Entity<LineageFlow>(entity =>
+            {
+                entity.ToTable("LineageFlow");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.DestinationObjectId).HasColumnName("DestinationObjectID");
+
+                entity.Property(e => e.Operation).HasMaxLength(50);
+
+                entity.Property(e => e.SourceObjectId).HasColumnName("SourceObjectID");
+            });
+
             modelBuilder.Entity<ObjectSearch>(entity =>
             {
                 entity.HasNoKey();
@@ -52,6 +78,40 @@ namespace DataCommandCenter.DAL.Models
                 entity.Property(e => e.SearchText).HasMaxLength(869);
             });
 
+            modelBuilder.Entity<Property>(entity =>
+            {
+                entity.ToTable("Property", "meta");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.HeaderId).HasColumnName("HeaderID");
+
+                entity.Property(e => e.LastUpdateDatetime).HasColumnType("datetime");
+
+                entity.Property(e => e.LastUpdateUser).HasMaxLength(255);
+
+                entity.Property(e => e.Property1)
+                    .HasMaxLength(255)
+                    .HasColumnName("Property");
+
+                entity.HasOne(d => d.Header)
+                    .WithMany(p => p.Properties)
+                    .HasForeignKey(d => d.HeaderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Property_Header");
+            });
+
+            modelBuilder.Entity<Query>(entity =>
+            {
+                entity.HasKey(e => e.QueryName);
+
+                entity.ToTable("Query");
+
+                entity.Property(e => e.QueryName).HasMaxLength(20);
+
+                entity.Property(e => e.QuerySql).HasColumnName("QuerySQL");
+            });
+
             modelBuilder.Entity<Server>(entity =>
             {
                 entity.ToTable("Server", "meta");
@@ -60,6 +120,8 @@ namespace DataCommandCenter.DAL.Models
 
                 entity.Property(e => e.Description).HasMaxLength(255);
 
+                entity.Property(e => e.HeaderId).HasColumnName("HeaderID");
+
                 entity.Property(e => e.ServerInstance).HasMaxLength(50);
 
                 entity.Property(e => e.ServerName).HasMaxLength(255);
@@ -67,6 +129,11 @@ namespace DataCommandCenter.DAL.Models
                 entity.Property(e => e.ServerTypeId).HasColumnName("ServerTypeID");
 
                 entity.Property(e => e.Version).HasMaxLength(50);
+
+                entity.HasOne(d => d.Header)
+                    .WithMany(p => p.Servers)
+                    .HasForeignKey(d => d.HeaderId)
+                    .HasConstraintName("FK_Server_Header");
 
                 entity.HasOne(d => d.ServerType)
                     .WithMany(p => p.Servers)
@@ -99,7 +166,14 @@ namespace DataCommandCenter.DAL.Models
 
                 entity.Property(e => e.Description).HasMaxLength(255);
 
+                entity.Property(e => e.HeaderId).HasColumnName("HeaderID");
+
                 entity.Property(e => e.ObjectId).HasColumnName("ObjectID");
+
+                entity.HasOne(d => d.Header)
+                    .WithMany(p => p.SqlColumns)
+                    .HasForeignKey(d => d.HeaderId)
+                    .HasConstraintName("FK_SQL_Column_Header");
 
                 entity.HasOne(d => d.Object)
                     .WithMany(p => p.SqlColumns)
@@ -129,6 +203,8 @@ namespace DataCommandCenter.DAL.Models
 
                 entity.Property(e => e.Description).HasMaxLength(255);
 
+                entity.Property(e => e.HeaderId).HasColumnName("HeaderID");
+
                 entity.Property(e => e.LogSizeMb)
                     .HasColumnType("numeric(38, 6)")
                     .HasColumnName("LogSizeMB");
@@ -138,6 +214,11 @@ namespace DataCommandCenter.DAL.Models
                     .UseCollation("Latin1_General_CI_AS_KS_WS");
 
                 entity.Property(e => e.ServerId).HasColumnName("ServerID");
+
+                entity.HasOne(d => d.Header)
+                    .WithMany(p => p.SqlDatabases)
+                    .HasForeignKey(d => d.HeaderId)
+                    .HasConstraintName("FK_SQL_Database_Header");
 
                 entity.HasOne(d => d.Server)
                     .WithMany(p => p.SqlDatabases)
@@ -182,6 +263,8 @@ namespace DataCommandCenter.DAL.Models
 
                 entity.Property(e => e.Collation).HasMaxLength(128);
 
+                entity.Property(e => e.ColumnId).HasColumnName("ColumnID");
+
                 entity.Property(e => e.ColumnName).HasMaxLength(255);
 
                 entity.Property(e => e.CreatedDatetime).HasColumnType("datetime");
@@ -192,11 +275,15 @@ namespace DataCommandCenter.DAL.Models
 
                 entity.Property(e => e.DataType).HasMaxLength(50);
 
+                entity.Property(e => e.DatabaseId).HasColumnName("DatabaseID");
+
                 entity.Property(e => e.DatabaseName).HasMaxLength(128);
 
                 entity.Property(e => e.LogSizeMb)
                     .HasColumnType("numeric(38, 6)")
                     .HasColumnName("LogSizeMB");
+
+                entity.Property(e => e.ObjectId).HasColumnName("ObjectID");
 
                 entity.Property(e => e.ObjectName).HasMaxLength(255);
 
@@ -207,6 +294,8 @@ namespace DataCommandCenter.DAL.Models
                     .UseCollation("Latin1_General_CI_AS_KS_WS");
 
                 entity.Property(e => e.SchemaName).HasMaxLength(50);
+
+                entity.Property(e => e.ServerId).HasColumnName("ServerID");
 
                 entity.Property(e => e.ServerInstance).HasMaxLength(50);
 
@@ -229,6 +318,8 @@ namespace DataCommandCenter.DAL.Models
 
                 entity.Property(e => e.Description).HasMaxLength(255);
 
+                entity.Property(e => e.HeaderId).HasColumnName("HeaderID");
+
                 entity.Property(e => e.ObjectName).HasMaxLength(255);
 
                 entity.Property(e => e.ObjectType).HasMaxLength(50);
@@ -241,6 +332,62 @@ namespace DataCommandCenter.DAL.Models
                     .WithMany(p => p.SqlObjects)
                     .HasForeignKey(d => d.DatabaseId)
                     .HasConstraintName("FK_SQL_Object_SQL_Database");
+
+                entity.HasOne(d => d.Header)
+                    .WithMany(p => p.SqlObjects)
+                    .HasForeignKey(d => d.HeaderId)
+                    .HasConstraintName("FK_SQL_Object_Header");
+            });
+
+            modelBuilder.Entity<SqlObjectMetadatum>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("SQL_ObjectMetadata", "meta");
+
+                entity.Property(e => e.Access)
+                    .HasMaxLength(60)
+                    .UseCollation("Latin1_General_CI_AS_KS_WS");
+
+                entity.Property(e => e.Collation).HasMaxLength(128);
+
+                entity.Property(e => e.CreatedDatetime).HasColumnType("datetime");
+
+                entity.Property(e => e.DataSizeMb)
+                    .HasColumnType("numeric(38, 6)")
+                    .HasColumnName("DataSizeMB");
+
+                entity.Property(e => e.DatabaseId).HasColumnName("DatabaseID");
+
+                entity.Property(e => e.DatabaseName).HasMaxLength(128);
+
+                entity.Property(e => e.LogSizeMb)
+                    .HasColumnType("numeric(38, 6)")
+                    .HasColumnName("LogSizeMB");
+
+                entity.Property(e => e.ObjectId).HasColumnName("ObjectID");
+
+                entity.Property(e => e.ObjectName).HasMaxLength(255);
+
+                entity.Property(e => e.ObjectType).HasMaxLength(50);
+
+                entity.Property(e => e.Recovery)
+                    .HasMaxLength(60)
+                    .UseCollation("Latin1_General_CI_AS_KS_WS");
+
+                entity.Property(e => e.SchemaName).HasMaxLength(50);
+
+                entity.Property(e => e.ServerId).HasColumnName("ServerID");
+
+                entity.Property(e => e.ServerInstance).HasMaxLength(50);
+
+                entity.Property(e => e.ServerName).HasMaxLength(255);
+
+                entity.Property(e => e.ServerType).HasMaxLength(255);
+
+                entity.Property(e => e.SizeMb).HasColumnName("SizeMB");
+
+                entity.Property(e => e.Version).HasMaxLength(50);
             });
 
             modelBuilder.Entity<SqlTableHistory>(entity =>
@@ -259,6 +406,23 @@ namespace DataCommandCenter.DAL.Models
                     .WithMany(p => p.SqlTableHistories)
                     .HasForeignKey(d => d.ObjectId)
                     .HasConstraintName("FK_SQL_TableHistory_SQL_Object");
+            });
+
+            modelBuilder.Entity<SsisPackageHeader>(entity =>
+            {
+                entity.ToTable("SSIS_PackageHeader", "etl");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Dtsid)
+                    .HasMaxLength(255)
+                    .HasColumnName("DTSID");
+
+                entity.Property(e => e.LastModified).HasColumnType("datetime");
+
+                entity.Property(e => e.PackageName).HasMaxLength(255);
+
+                entity.Property(e => e.PackagePath).HasMaxLength(1000);
             });
 
             OnModelCreatingPartial(modelBuilder);

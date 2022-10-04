@@ -16,7 +16,9 @@ namespace DataCommandCenter.DAL.Models
         public bool? PrimaryKey { get; set; }
         public int? OrdinalPosition { get; set; }
         public string? Description { get; set; }
+        public int? HeaderId { get; set; }
 
+        public virtual Header? Header { get; set; }
         public virtual SqlObject? Object { get; set; }
     }
 }

@@ -46,12 +46,22 @@ namespace DataCommandCenter.API.Controllers
         }
 
         [HttpPost]
-        [Route("GetMetadata")]
-        public async Task<ActionResult<IEnumerable<ObjectSearch>>> GetMetadata(ObjectSearch selectedItem)
+        [Route("GetMetadataForObject")]
+        public async Task<ActionResult<MetadataDTO>> GetMetadataForObject(ObjectSearch selectedItem)
         {
-            var objects = await _repository.GetMetadataForObject(selectedItem);
+            var retObj = new MetadataDTO();
 
-            return Ok(objects);
+            var servers = await _repository.GetServersForObject(selectedItem);
+            var dbs = await _repository.GetDBsForObject(selectedItem);
+            var objs = await _repository.GetObjectsForObject(selectedItem);
+            var cols = await _repository.GetColumnsForObject(selectedItem);
+
+            retObj.Servers = _mapper.Map<IEnumerable<ServerDTO>>(servers);
+            retObj.Databases = _mapper.Map<IEnumerable<DatabaseDTO>>(dbs);
+            retObj.Objects = _mapper.Map<IEnumerable<ObjectDTO>>(objs);
+            retObj.Columns = _mapper.Map<IEnumerable<ColumnDTO>>(cols);
+
+            return Ok(retObj);
         }
     }
 }

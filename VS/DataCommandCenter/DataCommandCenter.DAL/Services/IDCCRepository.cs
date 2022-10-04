@@ -28,7 +28,10 @@ namespace DataCommandCenter.DAL.Services
         Task<IEnumerable<Server>> GetServers();
 
         Task<IEnumerable<ObjectSearch>> SearchObjects(SearchObjectTypes? options = null);
-        Task<IEnumerable<ObjectSearch>> GetMetadataForObject(ObjectSearch SelectedItem);
+        Task<IEnumerable<Server>> GetServersForObject(ObjectSearch SelectedItem);
+        Task<IEnumerable<SqlDatabase>> GetDBsForObject(ObjectSearch SelectedItem);
+        Task<IEnumerable<SqlObject>> GetObjectsForObject(ObjectSearch SelectedItem);
+        Task<IEnumerable<SqlColumn>> GetColumnsForObject(ObjectSearch SelectedItem);
 
     }
 }

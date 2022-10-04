@@ -16,6 +16,7 @@ namespace DataCommandCenter.DAL.DTO
         public string? Version { get; set; }
         public bool? PullMetadata { get; set; }
         public string? ServerType { get; set; }
+        public ICollection<Property>? MetadataDictionary { get; set; }
 
         //public virtual ServerType? ServerType { get; set; }
         //public virtual ICollection<SqlDatabase> SqlDatabases { get; set; }
