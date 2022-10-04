@@ -21,24 +21,43 @@
         </ng-template>
       </div>
     </div>
-    <div class="col-4 floatleft align-text-middle" style="padding-left:0px;">
+    <div class="col-2 floatleft align-text-middle" style="padding-left:0px;">
       <div class="dropdown">
         <button class="btn btn-primary dropdown-toggle optionButton" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i onclick="ShowSearchOptions();" class="fa fa-search-plus fa-lg align-text-middle"></i> Search Options
         </button>
         <div class="dropdown-menu searchOptions" aria-labelledby="dropdownMenuButton">
-          <div class="text-center"><b>Search In:</b></div>
+
+          <div class="text-center"><b>Search For:</b></div>
+
+          <div class="searchOption">
+            <div class="form-check  form-switch">
+              <input class="form-check-input" type="radio" (change)="searchOptionChange($event)" [checked] = "!searchLineage" name="flexRadioDefault" id="flexRadioDefault1">
+              <label class="form-check-label" for="flexRadioDefault1">
+                Metadata
+              </label>
+            </div>
+            <div class="form-check  form-switch">
+              <input class="form-check-input" type="radio"  (change)="searchOptionChange($event)" [checked] = "searchLineage" name="flexRadioDefault" id="flexRadioDefault2">
+              <label class="form-check-label" for="flexRadioDefault2">
+                Lineage Data
+              </label>
+            </div>
+          </div>
+
           <div class="dropdown-divider"></div>
+
+          <div class="text-center"><b>Search In:</b></div>
 
           <div class="searchOption">
 
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault"  [checked]='searchSettings.Servers' (change)="searchSettings.Servers = !searchSettings.Servers">
+              <input class="form-check-input" type="checkbox" [disabled]="searchLineage" id="flexSwitchCheckDefault" [checked]='searchSettings.Servers' (change)="searchSettings.Servers = !searchSettings.Servers">
               <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-server"></i> Servers</label>
             </div>
 
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [checked]='searchSettings.Databases' (change)="searchSettings.Databases = !searchSettings.Databases">
+              <input class="form-check-input" type="checkbox" [disabled]="searchLineage" id="flexSwitchCheckDefault" [checked]='searchSettings.Databases' (change)="searchSettings.Databases = !searchSettings.Databases">
               <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-database"></i> Databases</label>
             </div>
 
@@ -54,17 +73,17 @@
 
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" [checked]='searchSettings.ProgrammableObjects' (change)="searchSettings.ProgrammableObjects = !searchSettings.ProgrammableObjects">
-              <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-gear"></i> Procedures/Functions/Triggers</label>
+              <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-gear"></i> Programmables</label>
             </div>
 
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault"  [checked]='searchSettings.Columns' (change)="searchSettings.Columns = !searchSettings.Columns">
+              <input class="form-check-input" type="checkbox" [disabled]="searchLineage" id="flexSwitchCheckDefault" [checked]='searchSettings.Columns' (change)="searchSettings.Columns = !searchSettings.Columns">
               <label class="form-check-label" for="flexSwitchCheckDefault"><i class="fa fa-pencil"></i> Columns</label>
             </div>
           </div>
 
         </div>
-      </div>
+        </div>
 
       
     </div>

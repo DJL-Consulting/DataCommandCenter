@@ -82,6 +82,7 @@ export interface ObjectSearch {
 }
 
 export interface SearchObjectTypes {
+  SearchType: string;
   QueryString: string;
   Servers: boolean;
   Databases: boolean;

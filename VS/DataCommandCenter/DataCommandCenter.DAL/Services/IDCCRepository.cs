@@ -11,6 +11,7 @@ namespace DataCommandCenter.DAL.Services
     {
         public class SearchObjectTypes
         {
+            public string SearchType { get; set; }
             public string QueryString { get; set; }
             public bool Servers { get; set; }
 
