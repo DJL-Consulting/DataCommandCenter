@@ -33,6 +33,6 @@ namespace DataCommandCenter.DAL.Services
         Task<IEnumerable<SqlDatabase>> GetDBsForObject(ObjectSearch SelectedItem);
         Task<IEnumerable<SqlObject>> GetObjectsForObject(ObjectSearch SelectedItem);
         Task<IEnumerable<SqlColumn>> GetColumnsForObject(ObjectSearch SelectedItem);
-
+        Task<(IEnumerable<LineageFlow>, IEnumerable<SqlObject>)> GetLineageForObject(ObjectSearch SelectedItem, int levels = 4);
     }
 }

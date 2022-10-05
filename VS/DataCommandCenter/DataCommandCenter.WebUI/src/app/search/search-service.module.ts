@@ -2,6 +2,7 @@ import { query } from "@angular/animations";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, catchError, tap, throwError, map } from "rxjs";
+import { LineageDTO } from "../models/LineageDTO";
 import { ServerDTO, ObjectSearch, SearchObjectTypes, MetadataDTO } from "../models/MetadataDTOs";
 
 @Injectable({
@@ -10,8 +11,9 @@ import { ServerDTO, ObjectSearch, SearchObjectTypes, MetadataDTO } from "../mode
 
 export class SearchService {
   private serverUrl = '/api/metadata/GetServers';  //https://localhost:7115
-  private searchUrl = '/api/metadata/SearchObjects'; //'/weatherforecast'; 
-  private metadataUrl = '/api/metadata/GetMetadataForObject'; //'/weatherforecast'; 
+  private searchUrl = '/api/metadata/SearchObjects'; 
+  private metadataUrl = '/api/metadata/GetMetadataForObject';  
+  private lineageUrl = '/api/metadata/GetLineageForObject'; 
   
 
   constructor(private http: HttpClient) { }
@@ -42,8 +44,8 @@ export class SearchService {
       );
   }
 
-  getLineageForObject(selectedItem: ObjectSearch): Observable<MetadataDTO> {
-    return this.http.post<MetadataDTO>(this.metadataUrl, selectedItem)
+  getLineageForObject(selectedItem: ObjectSearch): Observable<LineageDTO> {
+    return this.http.post<LineageDTO>(this.lineageUrl, selectedItem)
       .pipe(
         //(data => console.log('All: ', JSON.stringify(data))),
         catchError(this.handleError)

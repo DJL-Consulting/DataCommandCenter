@@ -63,5 +63,25 @@ namespace DataCommandCenter.API.Controllers
 
             return Ok(retObj);
         }
+
+        [HttpPost]
+        [Route("GetLineageForObject")]
+        public async Task<ActionResult<LineageDTO>> GetLineageForObject(ObjectSearch selectedItem)
+        {
+            try
+            {
+                var retObj = new LineageDTO();
+
+                var (flows, nodes) = await _repository.GetLineageForObject(selectedItem);
+                retObj.Nodes = _mapper.Map<IEnumerable<LineageNode>>(nodes);
+                retObj.Flows = _mapper.Map<IEnumerable<LineageLink>>(flows);
+
+                return Ok(retObj);
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+            }
+        }
     }
 }

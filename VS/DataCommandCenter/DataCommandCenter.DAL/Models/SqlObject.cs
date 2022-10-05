@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataCommandCenter.DAL.Models
 {
@@ -7,6 +8,8 @@ namespace DataCommandCenter.DAL.Models
     {
         public SqlObject()
         {
+            LineageFlowDestinationObjects = new HashSet<LineageFlow>();
+            LineageFlowSourceObjects = new HashSet<LineageFlow>();
             SqlColumns = new HashSet<SqlColumn>();
             SqlTableHistories = new HashSet<SqlTableHistory>();
         }
@@ -22,8 +25,13 @@ namespace DataCommandCenter.DAL.Models
         public string? Description { get; set; }
         public int? HeaderId { get; set; }
 
+        [NotMapped]
+        public int? Level { get; set; }
+
         public virtual SqlDatabase? Database { get; set; }
         public virtual Header? Header { get; set; }
+        public virtual ICollection<LineageFlow> LineageFlowDestinationObjects { get; set; }
+        public virtual ICollection<LineageFlow> LineageFlowSourceObjects { get; set; }
         public virtual ICollection<SqlColumn> SqlColumns { get; set; }
         public virtual ICollection<SqlTableHistory> SqlTableHistories { get; set; }
     }

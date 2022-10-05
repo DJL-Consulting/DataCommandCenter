@@ -17,6 +17,8 @@ namespace DataCommandCenter.DAL.Models
         }
 
         public virtual DbSet<Header> Headers { get; set; } = null!;
+        public virtual DbSet<Integration> Integrations { get; set; } = null!;
+        public virtual DbSet<IntegrationFlow> IntegrationFlows { get; set; } = null!;
         public virtual DbSet<LineageFlow> LineageFlows { get; set; } = null!;
         public virtual DbSet<ObjectSearch> ObjectSearches { get; set; } = null!;
         public virtual DbSet<Property> Properties { get; set; } = null!;
@@ -50,6 +52,42 @@ namespace DataCommandCenter.DAL.Models
                 entity.Property(e => e.Id).HasColumnName("ID");
             });
 
+            modelBuilder.Entity<Integration>(entity =>
+            {
+                entity.ToTable("Integration", "etl");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Created).HasColumnType("datetime");
+
+                entity.Property(e => e.Description).HasMaxLength(255);
+
+                entity.Property(e => e.IntegrationType).HasMaxLength(100);
+
+                entity.Property(e => e.LastModified).HasColumnType("datetime");
+
+                entity.Property(e => e.Name).HasMaxLength(255);
+
+                entity.Property(e => e.Path).HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<IntegrationFlow>(entity =>
+            {
+                entity.ToTable("IntegrationFlow", "etl");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Description).HasMaxLength(255);
+
+                entity.Property(e => e.IntegrationId).HasColumnName("IntegrationID");
+
+                entity.HasOne(d => d.Integration)
+                    .WithMany(p => p.IntegrationFlows)
+                    .HasForeignKey(d => d.IntegrationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_IntegrationFlow_Integration");
+            });
+
             modelBuilder.Entity<LineageFlow>(entity =>
             {
                 entity.ToTable("LineageFlow");
@@ -58,9 +96,26 @@ namespace DataCommandCenter.DAL.Models
 
                 entity.Property(e => e.DestinationObjectId).HasColumnName("DestinationObjectID");
 
+                entity.Property(e => e.IntegrationFlowId).HasColumnName("IntegrationFlowID");
+
                 entity.Property(e => e.Operation).HasMaxLength(50);
 
                 entity.Property(e => e.SourceObjectId).HasColumnName("SourceObjectID");
+
+                entity.HasOne(d => d.DestinationObject)
+                    .WithMany(p => p.LineageFlowDestinationObjects)
+                    .HasForeignKey(d => d.DestinationObjectId)
+                    .HasConstraintName("FK_LineageFlow_SQL_Object1");
+
+                entity.HasOne(d => d.IntegrationFlow)
+                    .WithMany(p => p.LineageFlows)
+                    .HasForeignKey(d => d.IntegrationFlowId)
+                    .HasConstraintName("FK_LineageFlow_IntegrationFlow");
+
+                entity.HasOne(d => d.SourceObject)
+                    .WithMany(p => p.LineageFlowSourceObjects)
+                    .HasForeignKey(d => d.SourceObjectId)
+                    .HasConstraintName("FK_LineageFlow_SQL_Object");
             });
 
             modelBuilder.Entity<ObjectSearch>(entity =>
