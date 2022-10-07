@@ -1,11 +1,11 @@
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { MetadataDTO, ObjectSearch, SearchObjectTypes, ServerDTO } from "../models/MetadataDTOs";
+import { ColumnDTO, DatabaseDTO, MetadataDTO, ObjectDTO, ObjectSearch, SearchObjectTypes, ServerDTO } from "../models/MetadataDTOs";
 import { LineageDTO, LineageNode } from "../models/LineageDTO";
 import { PropertyDTO } from "../models/PropertyDTO";
 import { SearchService } from "./search-service.module";
 import { Network } from 'vis-network';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 
 //import { Network } from "vis-network/peer/esm/vis-network";
 import { DataSet } from "vis-data/peer/esm/vis-data"
@@ -27,10 +27,36 @@ export class SearchComponent implements OnInit, AfterViewInit {
   lineageSearchSettings: SearchObjectTypes = { SearchType: "Lineage", QueryString: "", Servers: false, Databases: false, Tables: true, Views: true, ProgrammableObjects: true, Columns: false };
   searchSettings: SearchObjectTypes = this.defaultSearchSettings;
   searchLineage: boolean = false;
-  lineageRow?: LineageNode;
+  lineageRow?: LineageNode = {
+      id: 0,
+      title: '',
+      schemaName: null,
+      objectName: null,
+      objectType: null,
+      rows: null,
+      sizeMb: null,
+      objectDefinition: null,
+      description: null,
+      properties: [],
+      level: null
+  };
 
+  serverRow?: ServerDTO;
+  dbRow?: DatabaseDTO;
+  objRow?: ObjectDTO;
+  colRow?: ColumnDTO;
+
+  @ViewChild('serverModal') sdialog!: ElementRef;
+  @ViewChild('databaseModal') ddialog!: ElementRef;
+  @ViewChild('objectModal') odialog!: ElementRef;
+  @ViewChild('columnModal') cdialog!: ElementRef;
   @ViewChild('lineageModal') ldialog!: ElementRef;
   @ViewChild('network') el!: ElementRef;
+  @ViewChild('popupTable') tablePop!: ElementRef;
+  @ViewChild('popupServer') serverPop!: ElementRef;
+  @ViewChild('popupDatabase') databasePop!: ElementRef;
+  @ViewChild('popupObject') objectPop!: ElementRef;
+  @ViewChild('popupColumn') columnPop!: ElementRef;
     
   sub!: Subscription;
   errorMessage = '';
@@ -41,9 +67,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   constructor(private searchService: SearchService, private modalService: NgbModal) { }
 
-  open(content: any) {
-    this.modalService.open(content, { centered: true, keyboard: true, size: 'lg', animation: true }).result; 
-  }
+ open(content: any) {
+    this.modalService.open(content, {animation: true, size: "lg", centered: true, keyboard: true }).result;
+ }
 
   ngOnInit(): void {
     //this.getServers();
@@ -170,13 +196,17 @@ export class SearchComponent implements OnInit, AfterViewInit {
     var nodes = new DataSet<any>();
     var edges = new DataSet<any>();
 
+    var popup = document.getElementById("popupTable");
+
     var ids: number[] = [];
 
     //console.log(this.lineagedata.nodes);
 
+    var ct = this;
+
     this.lineagedata.nodes.forEach(function (obj) {
       if (!ids.includes(obj.id))
-        nodes.add({ id: "o" + obj.id.toString(), level: obj.level, label: obj.title, widthConstraint: 200, image: obj.objectType == "USER_TABLE" ? 'assets/images/table.jpg' : obj.objectType == "VIEW" ? 'assets/images/view.png' : 'assets/images/proc.png', shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
+        nodes.add({ title: ct.tablePop.nativeElement, id: "o" + obj.id.toString(), level: obj.level, label: obj.title, widthConstraint: 200, image: obj.objectType == "USER_TABLE" ? 'assets/images/table.jpg' : obj.objectType == "VIEW" ? 'assets/images/view.png' : 'assets/images/proc.png', shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
 
       ids.push(obj.id);
     });
@@ -193,6 +223,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     var options = {
       autoResize: false,
+      interaction: { hover: true },
       layout: {
         randomSeed: undefined,
         clusterThreshold: 150,
@@ -256,6 +287,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
       }
     });
 
+    this.networkInstance.on("hoverNode", function (params: any) {
+        var selId = params.node;
+        var row = ctx.lineagedata.nodes.find((obj) => { return 'o' + obj.id.toString() === selId; });
+
+        ctx.lineageRow = row;
+   });
+
     var nds = this.lineagedata.nodes;
     this.networkInstance.on("click", function (params: any) {
       if (params.nodes.length) {
@@ -265,6 +303,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         ctx.lineageRow = row;
 
         ctx.open(ctx.ldialog);
+        //ctx.ldialog.nativeElement.
       }
     });
   }
@@ -297,23 +336,25 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     console.log(sid);
 
+    var ct = this;
+
     this.metadata.servers.forEach(function (obj) {
-      nodes.add({ id: "s" + obj.id.toString(), level: 1, label: obj.serverName, widthConstraint: maxWidth, image: 'assets/images/server.jpg', shape: "image", size: 30, chosen: ("s" + obj.id.toString() == sid) })
+      nodes.add({ id: "s" + obj.id.toString(), title: ct.serverPop.nativeElement, level: 1, label: obj.serverName, widthConstraint: maxWidth, image: 'assets/images/server.jpg', shape: "image", size: 30, chosen: ("s" + obj.id.toString() == sid) })
     });
 
     this.metadata.databases.forEach(function (obj) {
-      nodes.add({ id: "d" + obj.id.toString(), level: 2, label: obj.databaseName, widthConstraint: maxWidth, image: 'assets/images/db2.png', shape: "image", size: 30, chosen: ("d" + obj.id.toString() == sid) })
+      nodes.add({ id: "d" + obj.id.toString(), title: ct.databasePop.nativeElement, level: 2, label: obj.databaseName, widthConstraint: maxWidth, image: 'assets/images/db2.png', shape: "image", size: 30, chosen: ("d" + obj.id.toString() == sid) })
       edges.add({ from: "d" + obj.id.toString(), to: "s" + obj.serverId?.toString(), arrows: "to", color: arrowColor })
     });
 
     this.metadata.objects.forEach(function (obj) {
       //nodes.add({ id: "o" + obj.id.toString(), label: obj.objectName, widthConstraint: 400, shape: "rectangle", size: 30 })
-      nodes.add({ id: "o" + obj.id.toString(), level: 3, label: obj.objectName, widthConstraint: maxWidth, image: obj.objectType == "USER_TABLE" ? 'assets/images/table.jpg' : obj.objectType == "VIEW" ? 'assets/images/view.png' : 'assets/images/proc.png', shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
+      nodes.add({ id: "o" + obj.id.toString(), title: ct.objectPop.nativeElement, level: 3, label: obj.objectName, widthConstraint: maxWidth, image: obj.objectType == "USER_TABLE" ? 'assets/images/table.jpg' : obj.objectType == "VIEW" ? 'assets/images/view.png' : 'assets/images/proc.png', shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
       edges.add({ from: "o" + obj.id.toString(), to: "d" + obj.databaseId?.toString(), arrows: "to", color: arrowColor })
     });
 
     this.metadata.columns.forEach(function (obj) {
-      nodes.add({ id: "c" + obj.id.toString(), level: 4, label: obj.columnName, widthConstraint: maxWidth, image: 'assets/images/column.png', shape: "image", size: 30, chosen: ("c" + obj.id.toString() == sid) })
+      nodes.add({ id: "c" + obj.id.toString(), title: ct.columnPop.nativeElement, level: 4, label: obj.columnName, widthConstraint: maxWidth, image: 'assets/images/column.png', shape: "image", size: 30, chosen: ("c" + obj.id.toString() == sid) })
       edges.add({ from: "c" + obj.id.toString(), to: "o" + obj.objectId?.toString(), arrows: "to", color: arrowColor })
     });
 
@@ -321,6 +362,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     var options = {
       autoResize: false,
+      interaction: { hover: true },
       layout: {
         clusterThreshold: 150,
         improvedLayout: true,
@@ -412,6 +454,55 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
       }
     });
+
+    this.networkInstance.on("hoverNode", function (params: any) {
+      var selId = params.node;
+      switch (selId[0]) {
+        case "s":
+          ctx.serverRow = ctx.metadata.servers.find((obj) => { return 's' + obj.id.toString() === selId; })
+          break;
+        case "d":
+          ctx.dbRow = ctx.metadata.databases.find((obj) => { return 'd' + obj.id.toString() === selId; })
+          break;
+        case "o":
+          ctx.objRow = ctx.metadata.objects.find((obj) => { return 'o' + obj.id.toString() === selId; })
+          break;
+        case "c":
+          ctx.colRow = ctx.metadata.columns.find((obj) => { return 'c' + obj.id.toString() === selId; })
+          break;
+      }
+
+      //var row = ctx.lineagedata.nodes.find((obj) => { return 'o' + obj.id.toString() === selId; });
+
+      //ctx.lineageRow = row;
+    });
+
+    this.networkInstance.on("click", function (params: any) {
+      if (params.nodes.length) {
+        var selId = params.nodes[0];
+
+        switch (selId[0]) {
+          case "s":
+            ctx.serverRow = ctx.metadata.servers.find((obj) => { return 's' + obj.id.toString() === selId; })
+            ctx.open(ctx.sdialog);
+            break;
+          case "d":
+            ctx.dbRow = ctx.metadata.databases.find((obj) => { return 'd' + obj.id.toString() === selId; })
+            ctx.open(ctx.ddialog);
+            break;
+          case "o":
+            ctx.objRow = ctx.metadata.objects.find((obj) => { return 'o' + obj.id.toString() === selId; })
+            ctx.open(ctx.odialog);
+            break;
+          case "c":
+            ctx.colRow = ctx.metadata.columns.find((obj) => { return 'c' + obj.id.toString() === selId; })
+            ctx.open(ctx.cdialog);
+            break;
+        }
+      }
+    });
+
+
   }
 
 

@@ -12,3 +12,18 @@
   padding-left: 10px;
   padding-right: 10px;
 }
+
+.textarea {
+  height: 200px;
+  overflow-y: scroll;
+}
+
+.modal-content {
+    position: absolute !important;
+    left: 50px;
+    top: 50px;
+}
+
+.popBox {
+  width: 500px;
+}
