@@ -6,12 +6,8 @@ import { PropertyDTO } from "../models/PropertyDTO";
 import { SearchService } from "./search-service.module";
 import { Network } from 'vis-network';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-
-//import { Network } from "vis-network/peer/esm/vis-network";
 import { DataSet } from "vis-data/peer/esm/vis-data"
 
-//import { Network } from 'vis-network';
-//import { DataSet } from 'vis-data';
 
 @Component({
   selector: 'app-search',
@@ -23,24 +19,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
   searchResult: ObjectSearch[] = [];
   lineagedata: LineageDTO = { nodes: [], flows: [] };
   metadata: MetadataDTO = { servers: [], databases: [], objects: [], columns: [] };
-  defaultSearchSettings: SearchObjectTypes = { SearchType: "Metadata", QueryString: "", Servers: false, Databases: true, Tables: true, Views: true, ProgrammableObjects: true, Columns: true };
-  lineageSearchSettings: SearchObjectTypes = { SearchType: "Lineage", QueryString: "", Servers: false, Databases: false, Tables: true, Views: true, ProgrammableObjects: true, Columns: false };
+  defaultSearchSettings: SearchObjectTypes = { SearchType: "Metadata", QueryString: "", Servers: false, Databases: true, Tables: true, Views: true, ProgrammableObjects: true, Columns: true, Integrations: false };
+  lineageSearchSettings: SearchObjectTypes = { SearchType: "Lineage", QueryString: "", Servers: false, Databases: false, Tables: true, Views: true, ProgrammableObjects: true, Columns: false, Integrations: true };
   searchSettings: SearchObjectTypes = this.defaultSearchSettings;
   searchLineage: boolean = false;
   searchText: string = "";
-  lineageRow?: LineageNode = {
-    id: 0,
-    title: '',
-    schemaName: null,
-    objectName: null,
-    objectType: null,
-    rows: null,
-    sizeMb: null,
-    objectDefinition: null,
-    description: null,
-    properties: [],
-    level: null
-  };
+  lineageRow?: LineageNode = undefined;
 
   flowRow?: LineageLink = undefined;
 
@@ -203,6 +187,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
     if (objType.includes("SQL"))
       return baseClass + "fa-gear";
 
+    if (objType.includes("INTEGRATION"))
+      return baseClass + "fa-copy";
+
 
     return "fa-objects-column";
 
@@ -221,7 +208,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     const arrowColor = { color: "#97C2FC", opacity: 0.4, highlight: "#00CC00" };  // color: "#97C2FC", highlight: "red"
 
-    var sid = "o" + this.searchItem?.id.toString();
+    var sid = ((this.searchItem?.objectType.toUpperCase() == "INTEGRATION") ? "i" : "o") + this.searchItem?.id.toString();
 
     var maxItems = this.lineagedata.nodes.length;
 
@@ -249,32 +236,53 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     const data = { nodes, edges };
 
-    var options = {
-      autoResize: false,
-      interaction: { hover: true },
-      layout: {
-        randomSeed: undefined,
-        clusterThreshold: 150,
-        improvedLayout: false,
-        hierarchical: {
-          enabled: true,
-          levelSeparation: 150,
-          nodeSpacing: 100,
-          treeSpacing: 1000,
-          blockShifting: true,
-          edgeMinimization: false,
-          parentCentralization: true,
-          direction: 'LR', // UD, DU, LR, RL
-          sortMethod: 'directed', //hubsize, directed
-          shakeTowards: 'leaves' //roots, leaves
+    if (this.searchItem?.objectType.toUpperCase() == "INTEGRATION") {
+      var options = {
+        autoResize: false,
+        interaction: { hover: true },
+        layout: {
+          randomSeed: undefined,
+          clusterThreshold: 150,
+          improvedLayout: false,
+          hierarchical: {
+            enabled: true,
+            levelSeparation: 150,
+            nodeSpacing: 100,
+            treeSpacing: 100,
+            blockShifting: true,
+            edgeMinimization: false,
+            parentCentralization: true,
+            direction: 'LR', // UD, DU, LR, RL
+            sortMethod: 'hubsize', //hubsize, directed
+            shakeTowards: 'leaves' //roots, leaves
+          }
         }
-      }
-      //physics: {
-      //  hierarchicalRepulsion: {
-      //    nodeDistance: (100 + (maxItems * 0)),
-      //  }
-      //}
-    };
+      };
+    }
+    else {
+      var options = {
+        autoResize: false,
+        interaction: { hover: true },
+        layout: {
+          randomSeed: undefined,
+          clusterThreshold: 150,
+          improvedLayout: false,
+          hierarchical: {
+            enabled: true,
+            levelSeparation: 150,
+            nodeSpacing: 100,
+            treeSpacing: 1000,
+            blockShifting: true,
+            edgeMinimization: false,
+            parentCentralization: true,
+            direction: 'LR', // UD, DU, LR, RL
+            sortMethod: 'directed', //hubsize, directed
+            shakeTowards: 'leaves' //roots, leaves
+          }
+        }
+      };
+    }
+   
 
     if (this.networkInstance != null) {
       this.networkInstance.destroy();
@@ -283,8 +291,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     this.networkInstance = new Network(container, data, options);
 
+    console.log(this.searchItem?.objectType.toUpperCase());
     var w = 1000;
-    this.networkInstance.setSelection({ nodes: [sid] });
+    if (this.searchItem?.objectType.toUpperCase() != "INTEGRATION")
+      this.networkInstance.setSelection({ nodes: [sid] });
 
     var zoptions = {
       scale: 5.0,
@@ -294,7 +304,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
       }
     };
 
-    this.networkInstance.focus(sid, zoptions);
+    if (this.searchItem?.objectType.toUpperCase() != "INTEGRATION")
+      this.networkInstance.focus(sid, zoptions);
 
     var ctx = this;
     this.networkInstance.on("doubleClick", function (params: any) {
@@ -346,7 +357,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         ctx.lineageRow = row;
 
         ctx.open(ctx.ldialog);
-        //ctx.ldialog.nativeElement.
+        return;
       }
       if (params.edges.length) {
         var selId = params.edges[0];

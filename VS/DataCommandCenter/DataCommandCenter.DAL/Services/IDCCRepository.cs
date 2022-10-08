@@ -24,6 +24,7 @@ namespace DataCommandCenter.DAL.Services
             public bool ProgrammableObjects { get; set; }
 
             public bool Columns { get; set; }
+            public bool Integrations { get; set; }
         }
 
         Task<IEnumerable<Server>> GetServers();

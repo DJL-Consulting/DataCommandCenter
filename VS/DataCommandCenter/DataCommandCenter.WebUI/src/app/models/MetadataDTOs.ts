@@ -96,5 +96,6 @@ export interface SearchObjectTypes {
   Views: boolean;
   ProgrammableObjects: boolean;
   Columns: boolean;
+  Integrations: boolean;
 }
 

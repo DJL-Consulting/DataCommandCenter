@@ -39,6 +39,7 @@ namespace DataCommandCenter.DAL.Services
                                                               || (options.Tables == true && (o.ObjectType == "SQL Table" || o.ObjectType == "SQL TYPE TABLE"))
                                                               || (options.ProgrammableObjects == true && (o.ObjectType == "SQL Stored Procedure" || o.ObjectType == "SQL Function" || o.ObjectType == "SQL  TABLE VALUED FUNCTION" || o.ObjectType == "SQL Trigger" || o.ObjectType == "SQL CLR SCALAR FUNCTION" || o.ObjectType == "SQL CLR STORED PROCEDURE" || o.ObjectType == "SQL CLR TABLE VALUED FUNCTION"))
                                                               || (options.Columns == true && o.ObjectType == "SQL Column")
+                                                              || (options.Integrations == true && o.ObjectType == "Integration")
                                                               )
                                                               && o.SearchText.ToUpper().Contains(searchQuery)
 
@@ -138,73 +139,94 @@ namespace DataCommandCenter.DAL.Services
 
         public async Task<(IEnumerable<LineageFlow>, IEnumerable<SqlObject>)> GetLineageForObject(ObjectSearch SelectedItem, int levels = 4)
         {
+            var objType = SelectedItem.ObjectType.ToUpper();
 
-            var thisObj = _context.SqlObjects.Where(o => o.Id == SelectedItem.Id).FirstOrDefault();
-
-            var startFlow = new LineageFlow { Id = -1, DestinationObject = thisObj, SourceObject = thisObj, Operation = "Root", DestinationObjectId = thisObj.Id, SourceObjectId = thisObj.Id };
-
-            List<LineageFlow> l1;
-            List<List<LineageFlow>> allFlows = new List<List<LineageFlow>>();
-            List<SqlObject> allObjects = new List<SqlObject>();
-
-
-            //Upstream
-            l1 = new List<LineageFlow>();
-
-            l1.Add(startFlow);
-
-            var objsRoot = await _context.SqlObjects.Where(o => o.Id == thisObj.Id).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
-            objsRoot[0].Level = levels + 1;
-            allObjects = allObjects.Union(objsRoot).ToList();
-
-            for (int x = levels; x > 0; x--)
+            if (objType == "INTEGRATION")
             {
-                var ids = l1.Select(l => l.DestinationObjectId);
+                var flows = await _context.LineageFlows.Where(o => o.IntegrationFlowId != null).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync();
 
-                var l2 = await _context.LineageFlows.Where(f => ids.Contains(f.SourceObjectId)).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync<LineageFlow>();
+                var sourceIds = flows.Select(s => s.SourceObjectId);
+                var destIds = flows.Select(d => d.DestinationObjectId);
 
-                var allIds = l2.Select(l => l.DestinationObjectId);
+                var sobjs = await _context.SqlObjects.Where(o => sourceIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
+                sobjs.ForEach(c => c.Level = 1);
 
-                allFlows.Add(l2);
+                var dobjs = await _context.SqlObjects.Where(o => destIds.Contains(o.Id) && !sourceIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
+                dobjs.ForEach(c => c.Level = 2);
 
-                var objs = await _context.SqlObjects.Where(o => allIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
- 
-                objs.ForEach(c => c.Level = c.Level == null ? x : c.Level);
+                var objs = sobjs.Union(dobjs);
 
-                allObjects = allObjects.Union(objs).ToList(); // objs.Where(x => !allObjects.Any(o => o.Id == x.Id))).ToList();
-
-                l1 = l2;
+                return (flows, objs);
             }
-
-            //allObjects.Reverse();
-
-            //Downstream
-            l1 = new List<LineageFlow>();
-
-            l1.Add(startFlow);
-
-            for (int x = (levels + 2); x < (2 * levels + 1); x++)
+            else
             {
-                var ids = l1.Select(l => l.SourceObjectId);
+                var thisObj = _context.SqlObjects.Where(o => o.Id == SelectedItem.Id).FirstOrDefault();
 
-                var l2 = await _context.LineageFlows.Where(f => ids.Contains(f.DestinationObjectId)).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync<LineageFlow>();
+                var startFlow = new LineageFlow { Id = -1, DestinationObject = thisObj, SourceObject = thisObj, Operation = "Root", DestinationObjectId = thisObj.Id, SourceObjectId = thisObj.Id };
 
-                allFlows.Add(l2);
+                List<LineageFlow> l1;
+                List<List<LineageFlow>> allFlows = new List<List<LineageFlow>>();
+                List<SqlObject> allObjects = new List<SqlObject>();
 
-                var allIds = l2.Select(l => l.SourceObjectId);
 
-                var objs = await _context.SqlObjects.Where(o => allIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
+                //Upstream
+                l1 = new List<LineageFlow>();
 
-                objs.ForEach(c => c.Level = c.Level == null ? x : c.Level);
+                l1.Add(startFlow);
 
-                allObjects = allObjects.Union(objs).ToList();// objs.Where(x => !allObjects.Any(o => o.Id == x.Id))).ToList();
+                var objsRoot = await _context.SqlObjects.Where(o => o.Id == thisObj.Id).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
+                objsRoot[0].Level = levels + 1;
+                allObjects = allObjects.Union(objsRoot).ToList();
 
-                l1 = l2;
+                for (int x = levels; x > 0; x--)
+                {
+                    var ids = l1.Select(l => l.DestinationObjectId);
+
+                    var l2 = await _context.LineageFlows.Where(f => ids.Contains(f.SourceObjectId)).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync<LineageFlow>();
+
+                    var allIds = l2.Select(l => l.DestinationObjectId);
+
+                    allFlows.Add(l2);
+
+                    var objs = await _context.SqlObjects.Where(o => allIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
+
+                    objs.ForEach(c => c.Level = c.Level == null ? x : c.Level);
+
+                    allObjects = allObjects.Union(objs).ToList(); // objs.Where(x => !allObjects.Any(o => o.Id == x.Id))).ToList();
+
+                    l1 = l2;
+                }
+
+                //allObjects.Reverse();
+
+                //Downstream
+                l1 = new List<LineageFlow>();
+
+                l1.Add(startFlow);
+
+                for (int x = (levels + 2); x < (2 * levels + 1); x++)
+                {
+                    var ids = l1.Select(l => l.SourceObjectId);
+
+                    var l2 = await _context.LineageFlows.Where(f => ids.Contains(f.DestinationObjectId)).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync<LineageFlow>();
+
+                    allFlows.Add(l2);
+
+                    var allIds = l2.Select(l => l.SourceObjectId);
+
+                    var objs = await _context.SqlObjects.Where(o => allIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
+
+                    objs.ForEach(c => c.Level = c.Level == null ? x : c.Level);
+
+                    allObjects = allObjects.Union(objs).ToList();// objs.Where(x => !allObjects.Any(o => o.Id == x.Id))).ToList();
+
+                    l1 = l2;
+                }
+
+                var flows = allFlows.SelectMany(x => x).ToList();
+
+                return (flows, allObjects);
             }
-
-            var flows = allFlows.SelectMany(x => x).ToList();
-
-            return (flows, allObjects);
         }
     }
 }
