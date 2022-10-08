@@ -76,15 +76,15 @@ namespace DataCommandCenter.DAL.Services
             {
                 case "SERVER":
                     var serverID = _context.SqlDatabases.Where(d => d.Id == SelectedItem.Id).FirstOrDefault().Id;
-                    return await _context.SqlDatabases.Where(d => d.Server.Id == serverID).ToListAsync<SqlDatabase>();  
+                    return await _context.SqlDatabases.Where(d => d.Server.Id == serverID).Include(o => o.Server).ToListAsync<SqlDatabase>();  
                 case "DATABASE":
-                    return await _context.SqlDatabases.Where(d => d.Id == SelectedItem.Id).ToListAsync<SqlDatabase>();  
+                    return await _context.SqlDatabases.Where(d => d.Id == SelectedItem.Id).Include(o => o.Server).ToListAsync<SqlDatabase>();  
                 case "SQL COLUMN":
                     var col = _context.SqlColumns.Where(c => c.Id == SelectedItem.Id).Include(o => o.Object).FirstOrDefault();
-                    return await _context.SqlDatabases.Where(d => d.Id == col.Object.DatabaseId).ToListAsync<SqlDatabase>();
+                    return await _context.SqlDatabases.Where(d => d.Id == col.Object.DatabaseId).Include(o => o.Server).ToListAsync<SqlDatabase>();
                 default:  //Object - Table/view/programmable obj
                     var obj = _context.SqlObjects.Where(o => o.Id == SelectedItem.Id).FirstOrDefault();
-                    return await _context.SqlDatabases.Where(d => d.Id == obj.DatabaseId).ToListAsync<SqlDatabase>();
+                    return await _context.SqlDatabases.Where(d => d.Id == obj.DatabaseId).Include(o => o.Server).ToListAsync<SqlDatabase>();
             }
         }
 
@@ -95,17 +95,17 @@ namespace DataCommandCenter.DAL.Services
             switch (objType)
             {
                 case "SERVER":
-                    return await _context.SqlObjects.Where(o => o.Database.Server.Id == -1).ToListAsync<SqlObject>();
+                    return await _context.SqlObjects.Where(o => o.Database.Server.Id == -1).Include(o => o.Database).Include(o => o.Database.Server).ToListAsync<SqlObject>();
                 //return await _context.SqlObjects.Where(o => o.Database.Server.Id == SelectedItem.Id).ToListAsync<SqlObject>();
                 case "DATABASE":
-                    return await _context.SqlObjects.Where(o => o.DatabaseId == SelectedItem.Id).ToListAsync<SqlObject>();
+                    return await _context.SqlObjects.Where(o => o.DatabaseId == SelectedItem.Id).Include(o => o.Database).Include(o => o.Database.Server).ToListAsync<SqlObject>();
                 case "SQL COLUMN":
                     var col = _context.SqlColumns.Where(c => c.Id == SelectedItem.Id).Include(o => o.Object).FirstOrDefault();
-                    return await _context.SqlObjects.Where(o => o.Id == col.ObjectId).ToListAsync<SqlObject>();
+                    return await _context.SqlObjects.Where(o => o.Id == col.ObjectId).Include(o => o.Database).Include(o => o.Database.Server).ToListAsync<SqlObject>();
                 default:  //Object - Table/view/programmable obj
                     //this will return all objects in the database
                     var dbID = _context.SqlObjects.Where(o => o.Id == SelectedItem.Id).FirstOrDefault().DatabaseId;
-                    return await _context.SqlObjects.Where(o => o.Database.Id == dbID).ToListAsync<SqlObject>();
+                    return await _context.SqlObjects.Where(o => o.Database.Id == dbID).Include(o => o.Database).Include(o => o.Database.Server).ToListAsync<SqlObject>();
 
                     //below will return only the selected object
                     //return await _context.SqlObjects.Where(o => o.Id == SelectedItem.Id).ToListAsync<SqlObject>();
@@ -119,79 +119,22 @@ namespace DataCommandCenter.DAL.Services
             switch (objType)
             {
                 case "SERVER":
-                    return await _context.SqlColumns.Where(c => c.Object.Database.Server.Id == -1).ToListAsync<SqlColumn>();
+                    return await _context.SqlColumns.Where(c => c.Object.Database.Server.Id == -1).Include(o => o.Object).Include(o => o.Object.Database).Include(o => o.Object.Database.Server).ToListAsync<SqlColumn>();
                 //return await _context.SqlColumns.Where(c => c.Object.Database.Server.Id == SelectedItem.Id).ToListAsync<SqlColumn>();
                 case "DATABASE":
-                    return await _context.SqlColumns.Where(c => c.Object.Database.Id == -1).ToListAsync<SqlColumn>();
+                    return await _context.SqlColumns.Where(c => c.Object.Database.Id == -1).Include(o => o.Object).Include(o => o.Object.Database).Include(o => o.Object.Database.Server).ToListAsync<SqlColumn>();
                 //return await _context.SqlColumns.Where(c => c.Object.Database.Id == SelectedItem.Id).ToListAsync<SqlColumn>();
                 case "SQL COLUMN":
                     //this will return all columns in the object
-                    var objID = _context.SqlColumns.Where(c => c.Id == SelectedItem.Id).Include(o => o.Object).FirstOrDefault().ObjectId;
+                    var objID = _context.SqlColumns.Where(c => c.Id == SelectedItem.Id).Include(o => o.Object).Include(o => o.Object.Database).Include(o => o.Object.Database.Server).FirstOrDefault().ObjectId;
                     return await _context.SqlColumns.Where(c => c.Id == objID).ToListAsync<SqlColumn>();
 
                     //Below will return only the selected column
                     //return await _context.SqlColumns.Where(c => c.Id == SelectedItem.Id).ToListAsync<SqlColumn>();
                 default:  //Object - Table/view/programmable obj
-                    return await _context.SqlColumns.Where(c => c.Object.Id == SelectedItem.Id).ToListAsync<SqlColumn>();
+                    return await _context.SqlColumns.Where(c => c.Object.Id == SelectedItem.Id).Include(o => o.Object).Include(o => o.Object.Database).Include(o => o.Object.Database.Server).ToListAsync<SqlColumn>();
             }
         }
-
-        //public async Task<(IEnumerable<LineageFlow>,IEnumerable<SqlObject>)> GetLineageForObjectOld(ObjectSearch SelectedItem, int levels = 4)
-        //{
-
-        //    var thisObj = _context.SqlObjects.Where(o => o.Id == SelectedItem.Id).FirstOrDefault();
-
-        //    var startFlow = new LineageFlow { Id = -1, DestinationObject = thisObj, SourceObject = thisObj, Operation = "Root", DestinationObjectId = thisObj.Id, SourceObjectId = thisObj.Id };
-
-        //    List<LineageFlow> l1;
-        //    List<List<LineageFlow>> allFlows = new List<List<LineageFlow>>();
-        //    List<List<SqlObject>> allObjects = new List<List<SqlObject>>();
-
-
-        //    //Upstream
-        //    l1 = new List<LineageFlow>();
-
-        //    l1.Add(startFlow);
-
-        //    for (int x=1; x<levels; x++)
-        //    {
-        //        var ids = l1.Select(l => l.DestinationObjectId); 
-
-        //        var l2 = await _context.LineageFlows.Where(f => ids.Contains(f.SourceObjectId)).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync<LineageFlow>();
-
-        //        allFlows.Add(l2);
-
-        //        //var objs = await _context.SqlObjects.Where(o => allIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
-
-        //        l1 = l2;
-        //    }
-
-
-        //    //Downstream
-        //    l1 = new List<LineageFlow>();
-
-        //    l1.Add(startFlow);
-
-        //    for (int x = 1; x < levels; x++)
-        //    {
-        //        var ids = l1.Select(l => l.SourceObjectId); 
-
-        //        var l2 = await _context.LineageFlows.Where(f => ids.Contains(f.DestinationObjectId)).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync<LineageFlow>();
-
-        //        allFlows.Add(l2);
-
-        //        l1 = l2;
-        //    }
-
-        //    var flows = allFlows.SelectMany(x => x).ToList();
-
-        //    var allIds = flows.Select(l => l.SourceObjectId).Union(flows.Select(l => l.DestinationObjectId)).Distinct();
-
-        //    var allObj = await _context.SqlObjects.Where(o => allIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
-
-        //    return (flows, allObj);
-        //}
-
 
         public async Task<(IEnumerable<LineageFlow>, IEnumerable<SqlObject>)> GetLineageForObject(ObjectSearch SelectedItem, int levels = 4)
         {
@@ -259,101 +202,9 @@ namespace DataCommandCenter.DAL.Services
                 l1 = l2;
             }
 
-            //int cnt = 0;
-            //for (int x = 0; x < allObjects.Count; x++)
-            //{
-            //    if (allObjects[x].Count > 0)
-            //        cnt += 1;
-            //    allObjects[x].ForEach(c => c.Level = cnt);
-            //}
-
             var flows = allFlows.SelectMany(x => x).ToList();
-
-            //var allIds = flows.Select(l => l.SourceObjectId).Union(flows.Select(l => l.DestinationObjectId)).Distinct();
-
-            //var allObj = allObjects.SelectMany(x => x).ToList(); //await _context.SqlObjects.Where(o => allIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
 
             return (flows, allObjects);
         }
-
-        public async Task<(IEnumerable<LineageFlow>, IEnumerable<SqlObject>)> GetLineageForObjectOld(ObjectSearch SelectedItem, int levels = 4)
-        {
-
-            var thisObj = _context.SqlObjects.Where(o => o.Id == SelectedItem.Id).FirstOrDefault();
-
-            var startFlow = new LineageFlow { Id = -1, DestinationObject = thisObj, SourceObject = thisObj, Operation = "Root", DestinationObjectId = thisObj.Id, SourceObjectId = thisObj.Id };
-
-            List<LineageFlow> l1;
-            List<List<LineageFlow>> allFlows = new List<List<LineageFlow>>();
-            List<List<SqlObject>> allObjects = new List<List<SqlObject>>();
-
-
-            //Upstream
-            l1 = new List<LineageFlow>();
-
-            l1.Add(startFlow);
-
-            var objsRoot = await _context.SqlObjects.Where(o => o.Id == thisObj.Id).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
-            allObjects.Add(objsRoot);
-
-            for (int x = 1; x < levels; x++)
-            {
-                var ids = l1.Select(l => l.DestinationObjectId);
-
-                var l2 = await _context.LineageFlows.Where(f => ids.Contains(f.SourceObjectId)).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync<LineageFlow>();
-
-                var allIds = l2.Select(l => l.DestinationObjectId);
-
-                allFlows.Add(l2);
-
-                var objs = await _context.SqlObjects.Where(o => allIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
-
-                allObjects.Add(objs);
-
-                l1 = l2;
-            }
-
-            //allObjects.Reverse();
-
-            //Downstream
-            l1 = new List<LineageFlow>();
-
-            l1.Add(startFlow);
-
-            for (int x = 1; x < levels; x++)
-            {
-                var ids = l1.Select(l => l.SourceObjectId);
-
-                var l2 = await _context.LineageFlows.Where(f => ids.Contains(f.DestinationObjectId)).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync<LineageFlow>();
-
-                allFlows.Add(l2);
-
-                var allIds = l2.Select(l => l.SourceObjectId);
-
-                var objs = await _context.SqlObjects.Where(o => allIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
-
-                allObjects.Add(objs);
-
-                l1 = l2;
-            }
-
-            int cnt = 0;
-            for (int x = 0; x < allObjects.Count; x++)
-            {
-                if (allObjects[x].Count > 0)
-                    cnt += 1;
-                allObjects[x].ForEach(c => c.Level = cnt);
-            }
-
-            var flows = allFlows.SelectMany(x => x).ToList();
-
-            //var allIds = flows.Select(l => l.SourceObjectId).Union(flows.Select(l => l.DestinationObjectId)).Distinct();
-
-            var allObj = allObjects.SelectMany(x => x).ToList(); //await _context.SqlObjects.Where(o => allIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
-
-            return (flows, allObj);
-        }
-
-
     }
 }

@@ -29,6 +29,7 @@ namespace DataCommandCenter.DAL.DTO
         public int? DestinationObjectId { get; set; }
         public int? IntegrationFlowId { get; set; }
 
+        public IntegrationDTO Integration { get; set; }
         public string IntegrationInfo { get; set; }
         public string? Operation { get; set; }
     }

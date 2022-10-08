@@ -617,8 +617,143 @@
   </div>
 </ng-template>
 
+<ng-template #integrationModal let-modal>
+  <div class="modal-header text-center">
+    <h4 class="modal-title" id="modal-basic-title">Integration {{ flowRow?.integration?.name }}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="container">
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Integration Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ flowRow?.integration?.name }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Integration Type:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ flowRow?.integration?.integrationType }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Path:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ flowRow?.integration?.path }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Description:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ flowRow?.integration?.description }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Created Date:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ flowRow?.integration?.created }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Modified Date:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ flowRow?.integration?.lastModified }}
+        </div>
+      </div>
+
+      <div *ngFor="let item of flowRow?.integration?.metadataDictionary" class="row">
+        <div class="col-6 text-end">
+          <b>{{ item.property1 }}:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ item.value }}
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
 
 <div style="visibility: hidden">
+  <div #popupIntegration class="container popBox">
+
+    <div class="row">
+      <div class="col-6 text-end">
+        <b>Integration Name:</b>
+      </div>
+      <div class="col-6 text-start">
+        {{ flowRow?.integration?.name }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 text-end">
+        <b>Integration Type:</b>
+      </div>
+      <div class="col-6 text-start">
+        {{ flowRow?.integration?.integrationType }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 text-end">
+        <b>Path:</b>
+      </div>
+      <div class="col-6 text-start">
+        {{ flowRow?.integration?.path }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 text-end">
+        <b>Description:</b>
+      </div>
+      <div class="col-6 text-start">
+        {{ flowRow?.integration?.description }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 text-end">
+        <b>Created Date:</b>
+      </div>
+      <div class="col-6 text-start">
+        {{ flowRow?.integration?.created }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 text-end">
+        <b>Modified Date:</b>
+      </div>
+      <div class="col-6 text-start">
+        {{ flowRow?.integration?.lastModified }}
+      </div>
+    </div>
+
+  </div>
+
   <div #popupServer class="container popBox">
     <div class="row">
       <div class="col-6 text-end">
@@ -663,7 +798,7 @@
         <b>Server Name:</b>
       </div>
       <div class="col-6 text-start">
-        {{ dbRow?.databaseName }}
+        {{ dbRow?.serverName }}
       </div>
     </div>
 
@@ -763,7 +898,7 @@
         <b>Server Name:</b>
       </div>
       <div class="col-6 text-start">
-        {{ objRow?.objectName }}
+        {{ objRow?.serverName }}
       </div>
     </div>
 
@@ -772,7 +907,7 @@
         <b>Database Name:</b>
       </div>
       <div class="col-6 text-start">
-        {{ objRow?.objectName }}
+        {{ objRow?.databaseName }}
       </div>
     </div>
 
@@ -846,7 +981,7 @@
         <b>Server Name:</b>
       </div>
       <div class="col-6 text-start">
-        {{ colRow?.columnName }}
+        {{ colRow?.serverName }}
       </div>
     </div>
 
@@ -855,7 +990,7 @@
         <b>Database Name:</b>
       </div>
       <div class="col-6 text-start">
-        {{ colRow?.columnName }}
+        {{ colRow?.databaseName }}
       </div>
     </div>
 
@@ -864,7 +999,7 @@
         <b>Object Name:</b>
       </div>
       <div class="col-6 text-start">
-        {{ colRow?.columnName }}
+        {{ colRow?.objectName }}
       </div>
     </div>
 

@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ColumnDTO, DatabaseDTO, MetadataDTO, ObjectDTO, ObjectSearch, SearchObjectTypes, ServerDTO } from "../models/MetadataDTOs";
-import { LineageDTO, LineageNode } from "../models/LineageDTO";
+import { IntegrationDTO, LineageDTO, LineageLink, LineageNode } from "../models/LineageDTO";
 import { PropertyDTO } from "../models/PropertyDTO";
 import { SearchService } from "./search-service.module";
 import { Network } from 'vis-network';
@@ -22,25 +22,32 @@ export class SearchComponent implements OnInit, AfterViewInit {
   servers: ServerDTO[] = [];
   searchResult: ObjectSearch[] = [];
   lineagedata: LineageDTO = { nodes: [], flows: [] };
-  metadata: MetadataDTO = { servers: [], databases: [], objects: [], columns:[] };
+  metadata: MetadataDTO = { servers: [], databases: [], objects: [], columns: [] };
   defaultSearchSettings: SearchObjectTypes = { SearchType: "Metadata", QueryString: "", Servers: false, Databases: true, Tables: true, Views: true, ProgrammableObjects: true, Columns: true };
   lineageSearchSettings: SearchObjectTypes = { SearchType: "Lineage", QueryString: "", Servers: false, Databases: false, Tables: true, Views: true, ProgrammableObjects: true, Columns: false };
   searchSettings: SearchObjectTypes = this.defaultSearchSettings;
   searchLineage: boolean = false;
+  searchText: string = "";
   lineageRow?: LineageNode = {
-      id: 0,
-      title: '',
-      schemaName: null,
-      objectName: null,
-      objectType: null,
-      rows: null,
-      sizeMb: null,
-      objectDefinition: null,
-      description: null,
-      properties: [],
-      level: null
+    id: 0,
+    title: '',
+    schemaName: null,
+    objectName: null,
+    objectType: null,
+    rows: null,
+    sizeMb: null,
+    objectDefinition: null,
+    description: null,
+    properties: [],
+    level: null
   };
 
+  flowRow?: LineageLink = undefined;
+
+  hasSearch: boolean = false;
+
+  lastclick: number = new Date().getTime();
+  doubleclick: boolean = false;
   serverRow?: ServerDTO;
   dbRow?: DatabaseDTO;
   objRow?: ObjectDTO;
@@ -51,25 +58,41 @@ export class SearchComponent implements OnInit, AfterViewInit {
   @ViewChild('objectModal') odialog!: ElementRef;
   @ViewChild('columnModal') cdialog!: ElementRef;
   @ViewChild('lineageModal') ldialog!: ElementRef;
+  @ViewChild('integrationModal') fdialog!: ElementRef;
   @ViewChild('network') el!: ElementRef;
   @ViewChild('popupTable') tablePop!: ElementRef;
   @ViewChild('popupServer') serverPop!: ElementRef;
   @ViewChild('popupDatabase') databasePop!: ElementRef;
   @ViewChild('popupObject') objectPop!: ElementRef;
   @ViewChild('popupColumn') columnPop!: ElementRef;
-    
+  @ViewChild('popupIntegration') integrationPop!: ElementRef;
+
+  
   sub!: Subscription;
   errorMessage = '';
   keyword = "displayText";
-  searchItem?: ObjectSearch;
+  searchItem: ObjectSearch = {
+      objectType: '',
+      id: 0,
+      searchText: '',
+      displayText: ''
+  };
 
   private networkInstance: any;
 
   constructor(private searchService: SearchService, private modalService: NgbModal) { }
 
- open(content: any) {
-    this.modalService.open(content, {animation: true, size: "lg", centered: true, keyboard: true }).result;
- }
+  async open(content: any) {
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    if (this.doubleclick)
+      return;
+    this.modalService.open(content, {animation: true, centered: true, size: "lg", keyboard: true }).result;
+  }
+
+  closeModals() {
+    this.modalService.dismissAll(); 
+  }
 
   ngOnInit(): void {
     //this.getServers();
@@ -84,6 +107,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
     else {
       this.searchSettings = this.defaultSearchSettings;
     }
+
+    if (this.hasSearch)
+      this.searchSelectEvent(this.searchItem);
+    else
+      this.searchChangeSearch(this.searchText);
+
   }
 
   ngAfterViewInit() {
@@ -119,7 +148,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
   }
 
   searchSelectEvent(item: ObjectSearch) {
-    //alert(item.displayText);
+    this.hasSearch = true;
+
     this.searchItem = item;
     if (this.searchLineage) {
       this.sub = this.searchService.getLineageForObject(item).subscribe({
@@ -144,6 +174,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
   }
 
   searchChangeSearch(search: string) {
+    this.hasSearch = false;
+    this.searchText = search;
     this.doSearch(search);
   }
 
@@ -200,8 +232,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     var ids: number[] = [];
 
-    //console.log(this.lineagedata.nodes);
-
     var ct = this;
 
     this.lineagedata.nodes.forEach(function (obj) {
@@ -211,13 +241,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
       ids.push(obj.id);
     });
 
-    //console.log(nodes);
-
+    console.log(this.lineagedata.flows);
+    var cnt = 0;
     this.lineagedata.flows.forEach(function (obj) {
-      edges.add({ to: "o" + obj.sourceObjectId?.toString(), from: "o" + obj.destinationObjectId?.toString(), arrows: "from", title: obj.integrationInfo, color: arrowColor })
+      edges.add({ id: cnt++, to: "o" + obj.sourceObjectId?.toString(), from: "o" + obj.destinationObjectId?.toString(), arrows: "from", title: obj.integrationFlowId == null ? obj.operation : ct.integrationPop.nativeElement, color: obj.integrationFlowId == null ? arrowColor : "#FFFF00" }) //label: obj.integrationInfo,
     });
-
-    //console.log(edges);
 
     const data = { nodes, edges };
 
@@ -239,8 +267,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
           direction: 'LR', // UD, DU, LR, RL
           sortMethod: 'directed', //hubsize, directed
           shakeTowards: 'leaves' //roots, leaves
-
-          //direction: "UD",
         }
       }
       //physics: {
@@ -249,8 +275,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
       //  }
       //}
     };
-
-
 
     if (this.networkInstance != null) {
       this.networkInstance.destroy();
@@ -270,11 +294,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
       }
     };
 
-    //this.networkInstance.focus(18, { scale: 0.5 })
     this.networkInstance.focus(sid, zoptions);
 
     var ctx = this;
     this.networkInstance.on("doubleClick", function (params: any) {
+      ctx.doubleclick = true;
       if (params.nodes.length) {
         // Get the lienage for the object
         var newSearchItem = {
@@ -294,8 +318,27 @@ export class SearchComponent implements OnInit, AfterViewInit {
         ctx.lineageRow = row;
    });
 
+    this.networkInstance.on("hoverEdge", function (params: any) {
+      var selId = params.edge;
+
+      var row = ctx.lineagedata.flows[selId];
+
+      ctx.flowRow = row;
+    });
+
+
     var nds = this.lineagedata.nodes;
     this.networkInstance.on("click", function (params: any) {
+      var d = new Date();
+
+      if (d.getTime() - ctx.lastclick < 1000) 
+        return;
+
+      ctx.doubleclick = false;
+
+
+      ctx.lastclick = d.getTime();
+
       if (params.nodes.length) {
         var selId = params.nodes[0];
         var row = ctx.lineagedata.nodes.find((obj) => { return 'o' + obj.id.toString() === selId; });
@@ -304,6 +347,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
         ctx.open(ctx.ldialog);
         //ctx.ldialog.nativeElement.
+      }
+      if (params.edges.length) {
+        var selId = params.edges[0];
+
+        var erow = ctx.lineagedata.flows[selId];
+
+        ctx.flowRow = erow;
+        ctx.open(ctx.fdialog);
       }
     });
   }
@@ -411,6 +462,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     var ctx = this;
     this.networkInstance.on("doubleClick", function (params: any) {
+      ctx.doubleclick = true;
+      ctx.closeModals();
+
       if (params.nodes.length) {
         switch (params.nodes[0][0]) {
           case "s":
@@ -478,6 +532,15 @@ export class SearchComponent implements OnInit, AfterViewInit {
     });
 
     this.networkInstance.on("click", function (params: any) {
+      var d = new Date();
+
+      if (d.getTime() - ctx.lastclick < 1000)
+        return;
+
+      ctx.doubleclick = false;
+
+      ctx.lastclick = d.getTime();
+
       if (params.nodes.length) {
         var selId = params.nodes[0];
 

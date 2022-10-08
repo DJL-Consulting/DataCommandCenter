@@ -11,10 +11,11 @@ namespace DataCommandCenter.DAL.DTO
     {
         public int Id { get; set; }
         public int? ServerId { get; set; }
+        public string? ServerName { get; set; }
         public string? DatabaseName { get; set; }
-        public byte Compatability { get; set; }
+        public string Compatability { get; set; }
         public string? Recovery { get; set; }
-        public DateTime CreatedDatetime { get; set; }
+        public string CreatedDatetime { get; set; }
         public string? Collation { get; set; }
         public string? Access { get; set; }
         public bool? ReadOnly { get; set; }

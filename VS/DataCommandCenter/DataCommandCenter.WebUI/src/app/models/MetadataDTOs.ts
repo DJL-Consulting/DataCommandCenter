@@ -25,8 +25,9 @@ export interface ServerDTO {
 export interface DatabaseDTO {
   id: number;
   serverId: number | null;
+  serverName: string | null;
   databaseName: string | null;
-  compatability: number;
+  compatability: string;
   recovery: string | null;
   createdDatetime: string;
   collation: string | null;
@@ -41,6 +42,8 @@ export interface DatabaseDTO {
 
 export interface ObjectDTO {
   id: number;
+  serverName: string | null;
+  databaseName: string | null;
   databaseId: number | null;
   schemaName: string | null;
   objectName: string | null;
@@ -55,6 +58,9 @@ export interface ObjectDTO {
 export interface ColumnDTO {
   id: number;
   objectId: number | null;
+  serverName: string | null;
+  databaseName: string | null;
+  objectName: string | null;
   columnName: string | null;
   dataType: string | null;
   maxLength: number | null;

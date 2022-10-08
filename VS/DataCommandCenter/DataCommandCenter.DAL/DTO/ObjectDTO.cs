@@ -11,6 +11,8 @@ namespace DataCommandCenter.DAL.DTO
     {
         public int Id { get; set; }
         public int? DatabaseId { get; set; }
+        public string? ServerName { get; set; }
+        public string? DatabaseName { get; set; }
         public string? SchemaName { get; set; }
         public string? ObjectName { get; set; }
         public string? ObjectType { get; set; }
