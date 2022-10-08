@@ -282,7 +282,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
       };
     }
-   
 
     if (this.networkInstance != null) {
       this.networkInstance.destroy();
@@ -323,10 +322,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
     });
 
     this.networkInstance.on("hoverNode", function (params: any) {
-        var selId = params.node;
-        var row = ctx.lineagedata.nodes.find((obj) => { return 'o' + obj.id.toString() === selId; });
+      var selId = params.node;
+      var row = ctx.lineagedata.nodes.find((obj) => { return 'o' + obj.id.toString() === selId; });
 
-        ctx.lineageRow = row;
+      console.log(row);
+
+      ctx.lineageRow = row;
    });
 
     this.networkInstance.on("hoverEdge", function (params: any) {
