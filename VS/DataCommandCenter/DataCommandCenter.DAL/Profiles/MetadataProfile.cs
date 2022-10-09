@@ -69,7 +69,7 @@ namespace DataCommandCenter.DAL.Profiles
             CreateMap<Models.SqlObject, DTO.LineageNode>()
                 .ForMember(dest => dest.Title, opt => 
                     opt.MapFrom((src, dest) =>
-                        { return (src.Database?.Server?.ServerName + newLine + src.Database?.DatabaseName + newLine + (src.SchemaName.ToUpper() != "DBO" ? src.SchemaName + "." + src.ObjectName : src.ObjectName)); }
+                        { return (dest.ObjectType.ToUpper() == "FILE" ? "File\n"+src.ObjectName : src.Database?.Server?.ServerName + newLine + src.Database?.DatabaseName + newLine + (src.SchemaName.ToUpper() != "DBO" ? src.SchemaName + "." + src.ObjectName : src.ObjectName)); }
                     ));
         }
     }

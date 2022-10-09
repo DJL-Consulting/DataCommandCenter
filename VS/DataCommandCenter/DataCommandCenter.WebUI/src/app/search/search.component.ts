@@ -50,7 +50,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
   @ViewChild('popupObject') objectPop!: ElementRef;
   @ViewChild('popupColumn') columnPop!: ElementRef;
   @ViewChild('popupIntegration') integrationPop!: ElementRef;
-
   
   sub!: Subscription;
   errorMessage = '';
@@ -71,7 +70,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     if (this.doubleclick)
       return;
-    this.modalService.open(content, {animation: true, centered: true, size: "lg", keyboard: true }).result;
+    this.modalService.open(content, {animation: true, centered: true, size: "md", keyboard: true }).result;
   }
 
   closeModals() {
@@ -104,8 +103,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   getServers(): void {
     this.sub = this.searchService.getServers().subscribe({
-      next: res => {
-        //console.log(res);
+      next: res => {        
         this.servers = res;
       },
       error: err => this.errorMessage = err
@@ -120,7 +118,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
       this.sub = this.searchService.getSearchResults(query, this.searchSettings).subscribe({
         next: res => {
-          //console.log(res);
           this.searchResult = res;
         },
         error: err => this.errorMessage = err
@@ -138,7 +135,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
     if (this.searchLineage) {
       this.sub = this.searchService.getLineageForObject(item).subscribe({
         next: res => {
-          //console.log(res);
           this.lineagedata = res;
           this.drawLineagedata();
         },
@@ -148,7 +144,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
     else {
       this.sub = this.searchService.getMetadataForObject(item).subscribe({
         next: res => {
-          //console.log(res);
           this.metadata = res;
           this.drawMetadata();
         },
@@ -204,7 +199,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
   }
 
   drawLineagedata(): void {
+    const tablePopElement = this.tablePop.nativeElement;
+
     const container = this.el.nativeElement;
+    const integrationPopElement = this.integrationPop.nativeElement;
 
     const arrowColor = { color: "#97C2FC", opacity: 0.4, highlight: "#00CC00" };  // color: "#97C2FC", highlight: "red"
 
@@ -221,17 +219,18 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     var ct = this;
 
+    console.log(this.lineagedata.nodes);
+
     this.lineagedata.nodes.forEach(function (obj) {
       if (!ids.includes(obj.id))
-        nodes.add({ title: ct.tablePop.nativeElement, id: "o" + obj.id.toString(), level: obj.level, label: obj.title, widthConstraint: 200, image: obj.objectType == "USER_TABLE" ? 'assets/images/table.jpg' : obj.objectType == "VIEW" ? 'assets/images/view.png' : 'assets/images/proc.png', shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
+        nodes.add({ title: tablePopElement, id: "o" + obj.id.toString(), level: obj.level, label: obj.title, widthConstraint: 200, image: obj.objectType == "USER_TABLE" ? 'assets/images/table.jpg' : obj.objectType == "VIEW" ? 'assets/images/view.png' : obj.objectType == "File" ? 'assets/images/file.png' : 'assets/images/proc.png', shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
 
       ids.push(obj.id);
     });
 
-    console.log(this.lineagedata.flows);
     var cnt = 0;
     this.lineagedata.flows.forEach(function (obj) {
-      edges.add({ id: cnt++, to: "o" + obj.sourceObjectId?.toString(), from: "o" + obj.destinationObjectId?.toString(), arrows: "from", title: obj.integrationFlowId == null ? obj.operation : ct.integrationPop.nativeElement, color: obj.integrationFlowId == null ? arrowColor : "#FFFF00" }) //label: obj.integrationInfo,
+      edges.add({ id: cnt++, to: "o" + obj.sourceObjectId?.toString(), from: "o" + obj.destinationObjectId?.toString(), arrows: "from", title: obj.integrationFlowId == null ? obj.operation : integrationPopElement, color: obj.integrationFlowId == null ? arrowColor : "#FFFF00" }) //label: obj.integrationInfo,
     });
 
     const data = { nodes, edges };
@@ -283,20 +282,22 @@ export class SearchComponent implements OnInit, AfterViewInit {
       };
     }
 
-    if (this.networkInstance != null) {
-      this.networkInstance.destroy();
-      this.networkInstance = null;
-    }
-
     this.networkInstance = new Network(container, data, options);
 
-    console.log(this.searchItem?.objectType.toUpperCase());
+    //if (this.networkInstance != null) {
+    //  this.networkInstance.setOptions(options);
+    //  this.networkInstance.setData({ nodes: data.nodes, edges: data.edges });
+    //}
+    //else {
+    //  this.networkInstance = new Network(container, data, options);
+    //}
+
     var w = 1000;
     if (this.searchItem?.objectType.toUpperCase() != "INTEGRATION")
       this.networkInstance.setSelection({ nodes: [sid] });
 
     var zoptions = {
-      scale: 5.0,
+      scale: 1.0,
       animation: {
         duration: 1000,
         easingFunction: "easeInOutQuad"
@@ -325,8 +326,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
       var selId = params.node;
       var row = ctx.lineagedata.nodes.find((obj) => { return 'o' + obj.id.toString() === selId; });
 
-      console.log(row);
-
       ctx.lineageRow = row;
    });
 
@@ -340,14 +339,17 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
 
     var nds = this.lineagedata.nodes;
-    this.networkInstance.on("click", function (params: any) {
+
+    //was on("click",....
+    this.networkInstance.on("oncontext", function (params: any) {
+      params.event.preventDefault();
+
       var d = new Date();
 
       if (d.getTime() - ctx.lastclick < 1000) 
         return;
 
       ctx.doubleclick = false;
-
 
       ctx.lastclick = d.getTime();
 
@@ -396,8 +398,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
       sid = "c";
 
     sid = sid + this.searchItem?.id.toString();
-
-    console.log(sid);
 
     var ct = this;
 
@@ -451,19 +451,21 @@ export class SearchComponent implements OnInit, AfterViewInit {
       }
     };
 
-
-    if (this.networkInstance != null) {
-      this.networkInstance.destroy();
-      this.networkInstance = null;
-    }
-
     this.networkInstance = new Network(container, data, options);
+
+    //if (this.networkInstance != null) {
+    //  this.networkInstance.setOptions(options);
+    //  this.networkInstance.setData({ nodes: data.nodes, edges: data.edges });
+    //}
+    //else {
+    //  this.networkInstance = new Network(container, data, options);
+    //}
 
     var w = 1000;
     this.networkInstance.setSelection({ nodes: [sid] });
 
     var zoptions = {
-      scale: 5.0,
+      scale: 1.0,
       animation: {
         duration: 1000,
         easingFunction: "easeInOutQuad"
@@ -543,7 +545,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
       //ctx.lineageRow = row;
     });
 
-    this.networkInstance.on("click", function (params: any) {
+    //was on("click",....
+    this.networkInstance.on("oncontext", function (params: any) {
+      params.event.preventDefault();
+
       var d = new Date();
 
       if (d.getTime() - ctx.lastclick < 1000)

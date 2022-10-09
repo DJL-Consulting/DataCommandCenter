@@ -9,10 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataCommandCenter.DAL", "Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataCommandCenter.Tests", "DataCommandCenter.Tests\DataCommandCenter.Tests.csproj", "{BAE7E547-F839-4700-96E7-8C9148389530}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "DataCommandCenter.Web", "DataCommandCenter.Web\DataCommandCenter.Web.esproj", "{E081E570-3989-4EEC-A9D5-629057C14C43}"
-EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "angularproject1", "angularproject1\angularproject1.esproj", "{9FA44663-B561-40CE-B708-06206D4C758C}"
-EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "DataCommandCenter.WebUI", "DataCommandCenter.WebUI\DataCommandCenter.WebUI.esproj", "{73B2EB56-AE7A-4DFE-94B8-452CD7A3A251}"
 EndProject
 Global
@@ -33,18 +29,6 @@ Global
 		{BAE7E547-F839-4700-96E7-8C9148389530}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAE7E547-F839-4700-96E7-8C9148389530}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAE7E547-F839-4700-96E7-8C9148389530}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E081E570-3989-4EEC-A9D5-629057C14C43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E081E570-3989-4EEC-A9D5-629057C14C43}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E081E570-3989-4EEC-A9D5-629057C14C43}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{E081E570-3989-4EEC-A9D5-629057C14C43}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E081E570-3989-4EEC-A9D5-629057C14C43}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E081E570-3989-4EEC-A9D5-629057C14C43}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{9FA44663-B561-40CE-B708-06206D4C758C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9FA44663-B561-40CE-B708-06206D4C758C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9FA44663-B561-40CE-B708-06206D4C758C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{9FA44663-B561-40CE-B708-06206D4C758C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9FA44663-B561-40CE-B708-06206D4C758C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9FA44663-B561-40CE-B708-06206D4C758C}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{73B2EB56-AE7A-4DFE-94B8-452CD7A3A251}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{73B2EB56-AE7A-4DFE-94B8-452CD7A3A251}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73B2EB56-AE7A-4DFE-94B8-452CD7A3A251}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
