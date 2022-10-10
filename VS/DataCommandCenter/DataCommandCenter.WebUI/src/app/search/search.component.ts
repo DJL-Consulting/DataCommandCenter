@@ -29,6 +29,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   flowRow?: LineageLink = undefined;
 
   hasSearch: boolean = false;
+  firstDraw: boolean = false;
 
   lastclick: number = new Date().getTime();
   doubleclick: boolean = false;
@@ -198,6 +199,21 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   }
 
+  pickImage(objType: string): any {
+    switch (objType.toUpperCase()) {
+      case "USER_TABLE":
+        return { unselected: 'assets/images/table.png', selected: 'assets/images/table-sel.png' };
+      case "VIEW":
+        return { unselected: 'assets/images/view.png', selected:'assets/images/view-sel.png'  };
+      case "FILE":
+        return { unselected: 'assets/images/file.png', selected: 'assets/images/file-sel.png' };
+      case "":
+        return { unselected: 'assets/images/', selected: 'assets/images/' };
+    }
+
+    return { unselected: 'assets/images/proc.png', selected: 'assets/images/proc-sel.png' };
+  }
+
   drawLineagedata(): void {
     const tablePopElement = this.tablePop.nativeElement;
 
@@ -223,7 +239,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     this.lineagedata.nodes.forEach(function (obj) {
       if (!ids.includes(obj.id))
-        nodes.add({ title: tablePopElement, id: "o" + obj.id.toString(), level: obj.level, label: obj.title, widthConstraint: 200, image: obj.objectType == "USER_TABLE" ? 'assets/images/table.jpg' : obj.objectType == "VIEW" ? 'assets/images/view.png' : obj.objectType == "File" ? 'assets/images/file.png' : 'assets/images/proc.png', shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
+        nodes.add({ title: tablePopElement, id: "o" + obj.id.toString(), level: obj.level, label: obj.title, widthConstraint: 200, image: ct.pickImage(obj.objectType == null ? '' : obj.objectType), shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
 
       ids.push(obj.id);
     });
@@ -238,7 +254,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     if (this.searchItem?.objectType.toUpperCase() == "INTEGRATION") {
       var options = {
         autoResize: false,
-        interaction: { hover: true },
+        interaction: { hover: true, tooltipDelay: 300 },
         layout: {
           randomSeed: undefined,
           clusterThreshold: 150,
@@ -261,7 +277,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     else {
       var options = {
         autoResize: false,
-        interaction: { hover: true },
+        interaction: { hover: true, tooltipDelay: 300 },
         layout: {
           randomSeed: undefined,
           clusterThreshold: 150,
@@ -296,17 +312,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
     if (this.searchItem?.objectType.toUpperCase() != "INTEGRATION")
       this.networkInstance.setSelection({ nodes: [sid] });
 
-    var zoptions = {
-      scale: 1.0,
-      animation: {
-        duration: 1000,
-        easingFunction: "easeInOutQuad"
-      }
-    };
 
-    if (this.searchItem?.objectType.toUpperCase() != "INTEGRATION")
-      this.networkInstance.focus(sid, zoptions);
-
+    this.firstDraw = true;
     var ctx = this;
     this.networkInstance.on("doubleClick", function (params: any) {
       ctx.doubleclick = true;
@@ -320,6 +327,24 @@ export class SearchComponent implements OnInit, AfterViewInit {
         };
         ctx.searchSelectEvent(newSearchItem);
       }
+    });
+
+    this.networkInstance.on("afterDrawing", function (canvas: any) {
+      if (!ctx.firstDraw)
+        return;
+
+      ctx.firstDraw = false;
+
+      var zoptions = {
+        scale: 1.25,
+        animation: {
+          duration: 1000,
+          easingFunction: "easeInOutQuad"
+        }
+      };
+
+      if (ctx.searchItem?.objectType.toUpperCase() != "INTEGRATION")
+        ctx.networkInstance.focus(sid, zoptions);
     });
 
     this.networkInstance.on("hoverNode", function (params: any) {
@@ -402,22 +427,22 @@ export class SearchComponent implements OnInit, AfterViewInit {
     var ct = this;
 
     this.metadata.servers.forEach(function (obj) {
-      nodes.add({ id: "s" + obj.id.toString(), title: ct.serverPop.nativeElement, level: 1, label: obj.serverName, widthConstraint: maxWidth, image: 'assets/images/server.jpg', shape: "image", size: 30, chosen: ("s" + obj.id.toString() == sid) })
+      nodes.add({ id: "s" + obj.id.toString(), title: ct.serverPop.nativeElement, level: 1, label: obj.serverName, widthConstraint: maxWidth, image: { unselected: 'assets/images/server.png', selected: 'assets/images/server-sel.png' }, shape: "image", size: 30, chosen: ("s" + obj.id.toString() == sid) })
     });
 
     this.metadata.databases.forEach(function (obj) {
-      nodes.add({ id: "d" + obj.id.toString(), title: ct.databasePop.nativeElement, level: 2, label: obj.databaseName, widthConstraint: maxWidth, image: 'assets/images/db2.png', shape: "image", size: 30, chosen: ("d" + obj.id.toString() == sid) })
+      nodes.add({ id: "d" + obj.id.toString(), title: ct.databasePop.nativeElement, level: 2, label: obj.databaseName, widthConstraint: maxWidth, image: { unselected: 'assets/images/db2.png', selected: 'assets/images/db2-sel.png' }, shape: "image", size: 30, chosen: ("d" + obj.id.toString() == sid) })
       edges.add({ from: "d" + obj.id.toString(), to: "s" + obj.serverId?.toString(), arrows: "to", color: arrowColor })
     });
 
     this.metadata.objects.forEach(function (obj) {
       //nodes.add({ id: "o" + obj.id.toString(), label: obj.objectName, widthConstraint: 400, shape: "rectangle", size: 30 })
-      nodes.add({ id: "o" + obj.id.toString(), title: ct.objectPop.nativeElement, level: 3, label: obj.objectName, widthConstraint: maxWidth, image: obj.objectType == "USER_TABLE" ? 'assets/images/table.jpg' : obj.objectType == "VIEW" ? 'assets/images/view.png' : 'assets/images/proc.png', shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
+      nodes.add({ id: "o" + obj.id.toString(), title: ct.objectPop.nativeElement, level: 3, label: obj.objectName, widthConstraint: maxWidth, image: ct.pickImage(obj.objectType == null ? '' : obj.objectType), shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
       edges.add({ from: "o" + obj.id.toString(), to: "d" + obj.databaseId?.toString(), arrows: "to", color: arrowColor })
     });
 
     this.metadata.columns.forEach(function (obj) {
-      nodes.add({ id: "c" + obj.id.toString(), title: ct.columnPop.nativeElement, level: 4, label: obj.columnName, widthConstraint: maxWidth, image: 'assets/images/column.png', shape: "image", size: 30, chosen: ("c" + obj.id.toString() == sid) })
+      nodes.add({ id: "c" + obj.id.toString(), title: ct.columnPop.nativeElement, level: 4, label: obj.columnName, widthConstraint: maxWidth, image: { unselected: 'assets/images/column.png', selected: 'assets/images/column-sel.png' }, shape: "image", size: 30, chosen: ("c" + obj.id.toString() == sid) })
       edges.add({ from: "c" + obj.id.toString(), to: "o" + obj.objectId?.toString(), arrows: "to", color: arrowColor })
     });
 
@@ -464,17 +489,28 @@ export class SearchComponent implements OnInit, AfterViewInit {
     var w = 1000;
     this.networkInstance.setSelection({ nodes: [sid] });
 
-    var zoptions = {
-      scale: 1.0,
-      animation: {
-        duration: 1000,
-        easingFunction: "easeInOutQuad"
-      }
-    };
-
-    this.networkInstance.focus(sid, zoptions);
 
     var ctx = this;
+    ctx.firstDraw = true;
+
+    this.networkInstance.on("afterDrawing", function (canvas: any) {
+      if (!ctx.firstDraw)
+        return;
+
+      ctx.firstDraw = false;
+
+      var zoptions = {
+        scale: 0.75,
+        animation: {
+          duration: 1000,
+          easingFunction: "easeInOutQuad"
+        }
+      };
+
+      ctx.networkInstance.focus(sid, zoptions);
+    });
+
+
     this.networkInstance.on("doubleClick", function (params: any) {
       ctx.doubleclick = true;
       ctx.closeModals();
