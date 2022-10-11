@@ -258,7 +258,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         layout: {
           randomSeed: undefined,
           clusterThreshold: 150,
-          improvedLayout: false,
+          improvedLayout: true,
           hierarchical: {
             enabled: true,
             levelSeparation: 150,
@@ -281,7 +281,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         layout: {
           randomSeed: undefined,
           clusterThreshold: 150,
-          improvedLayout: false,
+          improvedLayout: true,
           hierarchical: {
             enabled: true,
             levelSeparation: 150,
