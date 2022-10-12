@@ -59,13 +59,13 @@ namespace DataCommandCenter.DAL.Services
             switch (objType)
             {
                 case "SERVER":
-                    return await _context.Servers.Where(s => s.Id == SelectedItem.Id).Include(s => s.ServerType).ToListAsync<Server>();
+                    return await _context.Servers.Where(s => s.Id == SelectedItem.Id).Include(s => s.ServerType).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<Server>();
                 case "DATABASE":
-                    return await _context.Servers.Include(s => s.ServerType).Where(s => s.SqlDatabases.Any(d => d.Id == SelectedItem.Id)).ToListAsync<Server>();
+                    return await _context.Servers.Include(s => s.ServerType).Where(s => s.SqlDatabases.Any(d => d.Id == SelectedItem.Id)).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<Server>();
                 case "SQL COLUMN":
-                    return await _context.Servers.Include(s => s.ServerType).Where(s => s.SqlDatabases.Any(d => d.SqlObjects.Any(o => o.SqlColumns.Any(c => c.Id == SelectedItem.Id)))).ToListAsync<Server>();
+                    return await _context.Servers.Include(s => s.ServerType).Where(s => s.SqlDatabases.Any(d => d.SqlObjects.Any(o => o.SqlColumns.Any(c => c.Id == SelectedItem.Id)))).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<Server>();
                 default:  //Object - Table/view/programmable obj
-                    return await _context.Servers.Include(s => s.ServerType).Where(s => s.SqlDatabases.Any(d => d.SqlObjects.Any(o => o.Id == SelectedItem.Id))).ToListAsync<Server>();
+                    return await _context.Servers.Include(s => s.ServerType).Where(s => s.SqlDatabases.Any(d => d.SqlObjects.Any(o => o.Id == SelectedItem.Id))).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<Server>();
             }
         }
 
@@ -77,15 +77,15 @@ namespace DataCommandCenter.DAL.Services
             {
                 case "SERVER":
                     var serverID = _context.SqlDatabases.Where(d => d.Id == SelectedItem.Id).FirstOrDefault().Id;
-                    return await _context.SqlDatabases.Where(d => d.Server.Id == serverID).Include(o => o.Server).ToListAsync<SqlDatabase>();  
+                    return await _context.SqlDatabases.Where(d => d.Server.Id == serverID).Include(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlDatabase>();  
                 case "DATABASE":
-                    return await _context.SqlDatabases.Where(d => d.Id == SelectedItem.Id).Include(o => o.Server).ToListAsync<SqlDatabase>();  
+                    return await _context.SqlDatabases.Where(d => d.Id == SelectedItem.Id).Include(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlDatabase>();  
                 case "SQL COLUMN":
                     var col = _context.SqlColumns.Where(c => c.Id == SelectedItem.Id).Include(o => o.Object).FirstOrDefault();
-                    return await _context.SqlDatabases.Where(d => d.Id == col.Object.DatabaseId).Include(o => o.Server).ToListAsync<SqlDatabase>();
+                    return await _context.SqlDatabases.Where(d => d.Id == col.Object.DatabaseId).Include(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlDatabase>();
                 default:  //Object - Table/view/programmable obj
                     var obj = _context.SqlObjects.Where(o => o.Id == SelectedItem.Id).FirstOrDefault();
-                    return await _context.SqlDatabases.Where(d => d.Id == obj.DatabaseId).Include(o => o.Server).ToListAsync<SqlDatabase>();
+                    return await _context.SqlDatabases.Where(d => d.Id == obj.DatabaseId).Include(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlDatabase>();
             }
         }
 
@@ -96,17 +96,17 @@ namespace DataCommandCenter.DAL.Services
             switch (objType)
             {
                 case "SERVER":
-                    return await _context.SqlObjects.Where(o => o.Database.Server.Id == -1).Include(o => o.Database).Include(o => o.Database.Server).ToListAsync<SqlObject>();
+                    return await _context.SqlObjects.Where(o => o.Database.Server.Id == -1).Include(o => o.Database).ThenInclude(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlObject>();
                 //return await _context.SqlObjects.Where(o => o.Database.Server.Id == SelectedItem.Id).ToListAsync<SqlObject>();
                 case "DATABASE":
-                    return await _context.SqlObjects.Where(o => o.DatabaseId == SelectedItem.Id).Include(o => o.Database).Include(o => o.Database.Server).ToListAsync<SqlObject>();
+                    return await _context.SqlObjects.Where(o => o.DatabaseId == SelectedItem.Id).Include(o => o.Database).ThenInclude(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlObject>();
                 case "SQL COLUMN":
                     var col = _context.SqlColumns.Where(c => c.Id == SelectedItem.Id).Include(o => o.Object).FirstOrDefault();
-                    return await _context.SqlObjects.Where(o => o.Id == col.ObjectId).Include(o => o.Database).Include(o => o.Database.Server).ToListAsync<SqlObject>();
+                    return await _context.SqlObjects.Where(o => o.Id == col.ObjectId).Include(o => o.Database).ThenInclude(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlObject>();
                 default:  //Object - Table/view/programmable obj
                     //this will return all objects in the database
                     var dbID = _context.SqlObjects.Where(o => o.Id == SelectedItem.Id).FirstOrDefault().DatabaseId;
-                    return await _context.SqlObjects.Where(o => o.Database.Id == dbID).Include(o => o.Database).Include(o => o.Database.Server).ToListAsync<SqlObject>();
+                    return await _context.SqlObjects.Where(o => o.Database.Id == dbID).Include(o => o.Database).Include(o => o.Database.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlObject>();
 
                     //below will return only the selected object
                     //return await _context.SqlObjects.Where(o => o.Id == SelectedItem.Id).ToListAsync<SqlObject>();
@@ -120,20 +120,20 @@ namespace DataCommandCenter.DAL.Services
             switch (objType)
             {
                 case "SERVER":
-                    return await _context.SqlColumns.Where(c => c.Object.Database.Server.Id == -1).Include(o => o.Object).Include(o => o.Object.Database).Include(o => o.Object.Database.Server).ToListAsync<SqlColumn>();
+                    return await _context.SqlColumns.Where(c => c.Object.Database.Server.Id == -1).Include(o => o.Object).ThenInclude(o => o.Database).ThenInclude(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlColumn>();
                 //return await _context.SqlColumns.Where(c => c.Object.Database.Server.Id == SelectedItem.Id).ToListAsync<SqlColumn>();
                 case "DATABASE":
-                    return await _context.SqlColumns.Where(c => c.Object.Database.Id == -1).Include(o => o.Object).Include(o => o.Object.Database).Include(o => o.Object.Database.Server).ToListAsync<SqlColumn>();
+                    return await _context.SqlColumns.Where(c => c.Object.Database.Id == -1).Include(o => o.Object).ThenInclude(o => o.Database).ThenInclude(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlColumn>();
                 //return await _context.SqlColumns.Where(c => c.Object.Database.Id == SelectedItem.Id).ToListAsync<SqlColumn>();
                 case "SQL COLUMN":
                     //this will return all columns in the object
-                    var objID = _context.SqlColumns.Where(c => c.Id == SelectedItem.Id).Include(o => o.Object).Include(o => o.Object.Database).Include(o => o.Object.Database.Server).FirstOrDefault().ObjectId;
+                    var objID = _context.SqlColumns.Where(c => c.Id == SelectedItem.Id).Include(o => o.Object).ThenInclude(o => o.Database).ThenInclude(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).FirstOrDefault().ObjectId;
                     return await _context.SqlColumns.Where(c => c.Id == objID).ToListAsync<SqlColumn>();
 
                     //Below will return only the selected column
                     //return await _context.SqlColumns.Where(c => c.Id == SelectedItem.Id).ToListAsync<SqlColumn>();
                 default:  //Object - Table/view/programmable obj
-                    return await _context.SqlColumns.Where(c => c.Object.Id == SelectedItem.Id).Include(o => o.Object).Include(o => o.Object.Database).Include(o => o.Object.Database.Server).ToListAsync<SqlColumn>();
+                    return await _context.SqlColumns.Where(c => c.Object.Id == SelectedItem.Id).Include(o => o.Object).ThenInclude(o => o.Database).ThenInclude(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlColumn>();
             }
         }
 
@@ -151,7 +151,7 @@ namespace DataCommandCenter.DAL.Services
                 var sobjs = await _context.SqlObjects.Where(o => sourceIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
                 sobjs.ForEach(c => c.Level = 1);
 
-                var dobjs = await _context.SqlObjects.Where(o => destIds.Contains(o.Id) && !sourceIds.Contains(o.Id)).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
+                var dobjs = await _context.SqlObjects.Where(o => destIds.Contains(o.Id) && !sourceIds.Contains(o.Id)).Include(d => d.Database).ThenInclude(d => d.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
                 dobjs.ForEach(c => c.Level = 2);
 
                 var objs = sobjs.Union(dobjs);
@@ -174,7 +174,7 @@ namespace DataCommandCenter.DAL.Services
 
                 l1.Add(startFlow);
 
-                var objsRoot = await _context.SqlObjects.Where(o => o.Id == thisObj.Id).Include(d => d.Database).Include(d => d.Database.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
+                var objsRoot = await _context.SqlObjects.Where(o => o.Id == thisObj.Id).Include(d => d.Database).ThenInclude(d => d.Server).Include(h => h.Header).Include(h => h.Header.Properties).ToListAsync();
                 objsRoot[0].Level = levels + 1;
                 allObjects = allObjects.Union(objsRoot).ToList();
 

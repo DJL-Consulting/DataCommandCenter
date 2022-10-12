@@ -5,11 +5,8 @@ export interface Header {
 export interface Property {
   id: number;
   headerId: number;
-  property1: string | null;
+  key: string | null;
   value: string | null;
-  lastUpdateDatetime: string | null;
-  lastUpdateUser: string | null;
-  header: Header;
 }
 
 export interface ServerDTO {

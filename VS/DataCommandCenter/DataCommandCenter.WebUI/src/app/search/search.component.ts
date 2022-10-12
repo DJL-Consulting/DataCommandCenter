@@ -71,7 +71,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     if (this.doubleclick)
       return;
-    this.modalService.open(content, {animation: true, centered: true, size: "md", keyboard: true }).result;
+
+    var opt: NgbModalOptions = { animation: true, centered: true, size: "md", keyboard: true, backdrop: false }
+
+    this.modalService.open(content, opt).result;
   }
 
   closeModals() {

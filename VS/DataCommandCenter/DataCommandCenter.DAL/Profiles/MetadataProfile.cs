@@ -36,22 +36,28 @@ namespace DataCommandCenter.DAL.Profiles
             var newLine = "\n";
 
             CreateMap<Models.Server, DTO.ServerDTO>()
+                .ForMember(dest => dest.MetadataDictionary, opt => opt.MapFrom(src => src.Header.Properties))
                 .ForMember(dest => dest.ServerType, opt => opt.MapFrom(src => src.ServerType.ServerType1))
                 .ForMember(dest => dest.Version, opt => opt.MapFrom(src => this.ConvertVersion(src.Version)));
             CreateMap<Models.SqlDatabase, DTO.DatabaseDTO>()
+                .ForMember(dest => dest.MetadataDictionary, opt => opt.MapFrom(src => src.Header.Properties))
                 .ForMember(dest => dest.ServerName, opt => opt.MapFrom(src => src.Server.ServerName))
                 .ForMember(dest => dest.Compatability, opt => opt.MapFrom(src => (src.Compatability == null ? "" : this.ConvertVersion(src.Compatability.ToString()))))
                 .ForMember(dest => dest.CreatedDatetime, opt => opt.MapFrom(src => (src.CreatedDatetime == null ? "" : src.CreatedDatetime.ToString("MM/dd/yyyy h:mm tt"))));
             CreateMap<Models.SqlObject, DTO.ObjectDTO>()
+                .ForMember(dest => dest.MetadataDictionary, opt => opt.MapFrom(src => src.Header.Properties))
                 .ForMember(dest => dest.ServerName, opt => opt.MapFrom(src => src.Database.Server.ServerName))
                 .ForMember(dest => dest.DatabaseName, opt => opt.MapFrom(src => src.Database.DatabaseName));
             CreateMap<Models.SqlColumn, DTO.ColumnDTO>()
+                .ForMember(dest => dest.MetadataDictionary, opt => opt.MapFrom(src => src.Header.Properties))
                 .ForMember(dest => dest.ServerName, opt => opt.MapFrom(src => src.Object.Database.Server.ServerName))
                 .ForMember(dest => dest.DatabaseName, opt => opt.MapFrom(src => src.Object.Database.DatabaseName))
                 .ForMember(dest => dest.ObjectName, opt => opt.MapFrom(src => src.Object.ObjectName));
             CreateMap<Models.Integration, DTO.LineageDTO>();
+            CreateMap<Models.Property, DTO.PropertyDTO>()
+                .ForMember(dest => dest.Key, opt => opt.MapFrom(src => src.Property1));
             CreateMap<Models.IntegrationFlow, DTO.LineageDTO>();
-            CreateMap<Models.LineageFlow, DTO.LineageLink>()               
+            CreateMap<Models.LineageFlow, DTO.LineageLink>()
                 .ForPath(dest => dest.Integration.Name, opt => opt.MapFrom(s => s.IntegrationFlow.Integration.Name))
                 .ForPath(dest => dest.Integration.IntegrationType, opt => opt.MapFrom(s => s.IntegrationFlow.Integration.IntegrationType))
                 .ForPath(dest => dest.Integration.Path, opt => opt.MapFrom(s => s.IntegrationFlow.Integration.Path))
@@ -67,6 +73,7 @@ namespace DataCommandCenter.DAL.Profiles
                         { return (src.IntegrationFlow?.Integration?.IntegrationType + newLine + src.IntegrationFlow?.Integration?.Name); } 
                     ));
             CreateMap<Models.SqlObject, DTO.LineageNode>()
+                .ForMember(dest => dest.MetadataDictionary, opt => opt.MapFrom(src => src.Header.Properties))
                 .ForMember(dest => dest.Title, opt => 
                     opt.MapFrom((src, dest) =>
                         { return (dest.ObjectType.ToUpper() == "FILE" ? "File\n"+src.ObjectName : src.Database?.Server?.ServerName + newLine + src.Database?.DatabaseName + newLine + (src.SchemaName.ToUpper() != "DBO" ? src.SchemaName + "." + src.ObjectName : src.ObjectName)); }

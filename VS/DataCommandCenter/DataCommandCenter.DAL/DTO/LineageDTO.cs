@@ -18,7 +18,7 @@ namespace DataCommandCenter.DAL.DTO
         public double? SizeMb { get; set; }
         public string? ObjectDefinition { get; set; }
         public string? Description { get; set; }
-        public IEnumerable<PropertyDTO> Properties { get; set; }
+        public IEnumerable<PropertyDTO> MetadataDictionary { get; set; }
         public int? Level { get; set; }
     }
 

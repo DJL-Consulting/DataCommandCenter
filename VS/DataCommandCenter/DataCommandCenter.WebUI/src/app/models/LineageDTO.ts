@@ -11,7 +11,7 @@ export interface LineageNode {
   sizeMb: number | null;
   objectDefinition: string | null;
   description: string | null;
-  properties: PropertyDTO[];
+  metadataDictionary: Property[] | null;
   level: number | null;
 }
 

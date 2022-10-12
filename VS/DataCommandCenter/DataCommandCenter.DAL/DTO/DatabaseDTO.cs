@@ -23,6 +23,6 @@ namespace DataCommandCenter.DAL.DTO
         public decimal? LogSizeMb { get; set; }
         public bool? PullMetadata { get; set; }
         public string? Description { get; set; }
-        public ICollection<Property>? MetadataDictionary { get; set; }
+        public IEnumerable<PropertyDTO> MetadataDictionary { get; set; }
     }
 }

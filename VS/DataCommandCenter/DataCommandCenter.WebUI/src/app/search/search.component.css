@@ -4,8 +4,13 @@
 }
 /* whitesmoke; floralwhite;*/
 .searchOptions {
-  background-color: floralwhite;
+  background-color: #FCF6F5FF; /*floralwhite;*/
   color: #333333;
+}
+
+.searchPage {
+  padding-left: 5vw;
+  width: 95VW;
 }
 
 .searchOption {
@@ -13,17 +18,26 @@
   padding-right: 10px;
 }
 
+.visNetwork {
+  width: 80vw;
+  height: 80vh;
+  border: 1px solid lightgray;
+  background-color: floralwhite; /*floralwhite; */
+}
+
 .textarea {
   height: 200px;
   overflow-y: scroll;
 }
 
-.modal-content {
-    position: absolute !important;
-    left: 50px;
-    top: 50px;
-}
+/*.popModal {
+  background-color: aqua;
+  position: absolute !important;
+  left: 50px;
+  top: 50px;
+}*/
 
 .popBox {
+  //background-color: azure;
   width: 500px;
 }
