@@ -238,8 +238,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     var ct = this;
 
-    console.log(this.lineagedata.nodes);
-
     this.lineagedata.nodes.forEach(function (obj) {
       if (!ids.includes(obj.id))
         nodes.add({ title: tablePopElement, id: "o" + obj.id.toString(), level: obj.level, label: obj.title, widthConstraint: 200, image: ct.pickImage(obj.objectType == null ? '' : obj.objectType), shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })

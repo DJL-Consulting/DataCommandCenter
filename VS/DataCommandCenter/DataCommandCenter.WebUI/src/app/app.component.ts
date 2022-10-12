@@ -8,4 +8,16 @@ import { Component } from '@angular/core';
 
 export class AppComponent {
   title = 'Data Command Center';
+  isUserLoggedIn = false;
+
+  ngOnInit() {
+    let storeData = localStorage.getItem("isUserLoggedIn");
+
+    if (storeData != null && storeData == "true")
+      this.isUserLoggedIn = true;
+    else
+
+
+      this.isUserLoggedIn = false;
+  }
 }
