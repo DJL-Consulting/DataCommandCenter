@@ -4,6 +4,11 @@
   margin: 0 auto;
 }
 
+.login {
+  width: 25vw;
+  border: groove 5px;
+}
+
 .loginPage {
     height: 90vh;
 }

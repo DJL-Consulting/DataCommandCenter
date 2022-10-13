@@ -1,10 +1,16 @@
 .optionButton {
-  background-color: #337ab7;
+  background-color: #0A58CA; /* #337ab7; */
   border-color: #2e6da4;
 }
+
+  .optionButton:hover, .optionButton[aria-expanded="true"] {
+    background-color: #0D6EFD; /* #337ab7; */
+    border-color: #2e6da4;
+  }
+
 /* whitesmoke; floralwhite;*/
 .searchOptions {
-  background-color: #FCF6F5FF; /*floralwhite;*/
+  /*background-color: #FCF6F5FF; /*floralwhite;*/
   color: #333333;
 }
 
@@ -21,7 +27,8 @@
 .visNetwork {
   width: 80vw;
   height: 80vh;
-  border: 1px solid lightgray;
+  border: groove 5px #337ab7;
+  /*1px solid lightgray; */
   background-color: floralwhite; /*floralwhite; */
 }
 
