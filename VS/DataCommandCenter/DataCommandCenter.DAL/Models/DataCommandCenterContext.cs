@@ -33,6 +33,7 @@ namespace DataCommandCenter.DAL.Models
         public virtual DbSet<SqlObjectMetadatum> SqlObjectMetadata { get; set; } = null!;
         public virtual DbSet<SqlTableHistory> SqlTableHistories { get; set; } = null!;
         public virtual DbSet<SsisPackageHeader> SsisPackageHeaders { get; set; } = null!;
+        public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -50,6 +51,10 @@ namespace DataCommandCenter.DAL.Models
                 entity.ToTable("Header", "meta");
 
                 entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.CreatedDatetime)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
             });
 
             modelBuilder.Entity<Integration>(entity =>
@@ -141,9 +146,13 @@ namespace DataCommandCenter.DAL.Models
 
                 entity.Property(e => e.HeaderId).HasColumnName("HeaderID");
 
-                entity.Property(e => e.LastUpdateDatetime).HasColumnType("datetime");
+                entity.Property(e => e.LastUpdateDatetime)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.LastUpdateUser).HasMaxLength(255);
+                entity.Property(e => e.LastUpdateUser)
+                    .HasMaxLength(255)
+                    .HasDefaultValueSql("(user_name())");
 
                 entity.Property(e => e.Property1)
                     .HasMaxLength(255)
@@ -478,6 +487,31 @@ namespace DataCommandCenter.DAL.Models
                 entity.Property(e => e.PackageName).HasMaxLength(255);
 
                 entity.Property(e => e.PackagePath).HasMaxLength(1000);
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("User");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.CreatedDatetime)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.Email).HasMaxLength(255);
+
+                entity.Property(e => e.FirstName).HasMaxLength(50);
+
+                entity.Property(e => e.LastLoginDatetime).HasColumnType("datetime");
+
+                entity.Property(e => e.LastName).HasMaxLength(50);
+
+                entity.Property(e => e.PasswordHash).HasMaxLength(1024);
+
+                entity.Property(e => e.UserName).HasMaxLength(50);
+
+                entity.Property(e => e.UserType).HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);

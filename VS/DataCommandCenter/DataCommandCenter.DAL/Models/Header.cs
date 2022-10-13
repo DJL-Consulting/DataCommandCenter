@@ -15,6 +15,7 @@ namespace DataCommandCenter.DAL.Models
         }
 
         public int Id { get; set; }
+        public DateTime? CreatedDatetime { get; set; }
 
         public virtual ICollection<Property> Properties { get; set; }
         public virtual ICollection<Server> Servers { get; set; }

@@ -27,7 +27,6 @@ namespace DataCommandCenter.DAL.Models
 
         [NotMapped]
         public int? Level { get; set; }
-
         public virtual SqlDatabase? Database { get; set; }
         public virtual Header? Header { get; set; }
         public virtual ICollection<LineageFlow> LineageFlowDestinationObjects { get; set; }

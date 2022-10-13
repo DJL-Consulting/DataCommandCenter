@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-
 import { FormGroup, FormControl } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { SearchService } from "../search/search-service.module";
 
 @Component({
   selector: 'app-login',
@@ -14,23 +15,30 @@ export class LoginComponent implements OnInit {
   userName!: string;
   password!: string;
   formData!: FormGroup;
-
-  constructor(private authService: AuthService, private router: Router) { }
+  sub!: Subscription;
+  
+  constructor(private authService: AuthService, private router: Router, private searchService: SearchService) { }
 
   ngOnInit() {
     this.formData = new FormGroup({
-      userName: new FormControl("admin"),
-      password: new FormControl("admin"),
+      userName: new FormControl("demo"),
+      password: new FormControl("demo"),
     });
   }
 
-  onClickSubmit(data: any) {
+  async onClickSubmit(data: any) {
     this.userName = data.userName;
     this.password = data.password;
-    
-    this.authService.login(this.userName, this.password)
-      .subscribe(data => {
-        if (data) this.router.navigate(['/search']);
-      });
+
+    this.password = this.password; // base 64 encode?
+
+    var isLoggedIn = await this.authService.login(this.userName, this.password);
+
+    if (isLoggedIn)
+      this.router.navigate(['/search']);
+    else
+      alert("Login failed!");
   }
+
+
 }

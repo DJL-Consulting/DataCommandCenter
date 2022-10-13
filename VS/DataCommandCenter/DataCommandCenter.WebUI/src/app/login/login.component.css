@@ -4,6 +4,10 @@
   margin: 0 auto;
 }
 
+.loginPage {
+    height: 90vh;
+}
+
 input {
   margin-bottom: 20px;
 }

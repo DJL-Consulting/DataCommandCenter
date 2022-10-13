@@ -8,7 +8,7 @@
       <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/welcome'>Home</a></li>
       <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/search'>Search Metadata</a></li>
       <li class="nav-item">
-        <div *ngIf="isUserLoggedIn; else isLogOut">
+        <div *ngIf="isUserLoggedIn(); else isLogOut">
           <a class="nav-link" routerLink="/logout">Logout</a>
         </div>
 

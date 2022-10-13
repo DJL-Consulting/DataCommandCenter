@@ -1,5 +1,5 @@
 import { query } from "@angular/animations";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, catchError, tap, throwError, map } from "rxjs";
 import { LineageDTO } from "../models/LineageDTO";
@@ -13,13 +13,31 @@ export class SearchService {
   private serverUrl = '/api/metadata/GetServers';  //https://localhost:7115
   private searchUrl = '/api/metadata/SearchObjects'; 
   private metadataUrl = '/api/metadata/GetMetadataForObject';  
-  private lineageUrl = '/api/metadata/GetLineageForObject'; 
+  private lineageUrl = '/api/metadata/GetLineageForObject';
+
+  jwt!: string;
+  //jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZ2l2ZW5fbmFtZSI6IkRlbW8iLCJmYW1pbHlfbmFtZSI6IlVzZXIiLCJlbWFpbCI6ImRlbW9AdXNlci5vcmciLCJ1c2VyX3R5cGUiOiJBZG1pbiIsIm5iZiI6MTY2NTU5ODE5MCwiZXhwIjoxNjY2MjAyOTkwLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MTE1IiwiYXVkIjoiZGF0YWNvbW1hbmRjZW50ZXJhcGkifQ.xE3za9mtaUq5hOX6_IwS4f_vfcqIudEIY8rywY42qmk";
+
   
 
   constructor(private http: HttpClient) { }
 
+  getToken(): string {
+    var token = localStorage.getItem('loginToken');
+    return (token == null ? "" : token);
+  }
+
+  getHeaders() {
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${this.getToken()}`
+    })
+  }
+
   getServers(): Observable<ServerDTO[]> {
-    return this.http.get<ServerDTO[]>(this.serverUrl)
+
+
+    return this.http.get<ServerDTO[]>(this.serverUrl, { headers: this.getHeaders() })
       .pipe(
         //tap(data => console.log('All: ', JSON.stringify(data))),
         catchError(this.handleError)
@@ -29,7 +47,7 @@ export class SearchService {
   getSearchResults(queryString: string, options: SearchObjectTypes): Observable<ObjectSearch[]> {
     options.QueryString = queryString;
 
-    return this.http.post<ObjectSearch[]>(this.searchUrl, options)
+    return this.http.post<ObjectSearch[]>(this.searchUrl, options, { headers: this.getHeaders() })
       .pipe(
         //tap(data => console.log('All: ', JSON.stringify(data))),
         catchError(this.handleError)
@@ -37,7 +55,7 @@ export class SearchService {
   }
 
   getMetadataForObject(selectedItem: ObjectSearch): Observable<MetadataDTO> {
-    return this.http.post<MetadataDTO>(this.metadataUrl, selectedItem)
+    return this.http.post<MetadataDTO>(this.metadataUrl, selectedItem, { headers: this.getHeaders() })
       .pipe(
         //(data => console.log('All: ', JSON.stringify(data))),
         catchError(this.handleError)
@@ -45,7 +63,7 @@ export class SearchService {
   }
 
   getLineageForObject(selectedItem: ObjectSearch): Observable<LineageDTO> {
-    return this.http.post<LineageDTO>(this.lineageUrl, selectedItem)
+    return this.http.post<LineageDTO>(this.lineageUrl, selectedItem, { headers: this.getHeaders() })
       .pipe(
         //(data => console.log('All: ', JSON.stringify(data))),
         catchError(this.handleError)

@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Hosting.Server;
 using static DataCommandCenter.DAL.Services.IDCCRepository;
 using Microsoft.AspNetCore.Cors;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DataCommandCenter.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MetadataController : ControllerBase

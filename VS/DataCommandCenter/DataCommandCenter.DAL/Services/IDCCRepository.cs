@@ -1,4 +1,5 @@
-﻿using DataCommandCenter.DAL.Models;
+﻿using DataCommandCenter.DAL.DTO;
+using DataCommandCenter.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,5 +36,6 @@ namespace DataCommandCenter.DAL.Services
         Task<IEnumerable<SqlObject>> GetObjectsForObject(ObjectSearch SelectedItem);
         Task<IEnumerable<SqlColumn>> GetColumnsForObject(ObjectSearch SelectedItem);
         Task<(IEnumerable<LineageFlow>, IEnumerable<SqlObject>)> GetLineageForObject(ObjectSearch SelectedItem, int levels = 4);
+        public DCCuser ValidateUserCredentials(string? userName, string? password);
     }
 }

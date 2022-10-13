@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static DataCommandCenter.DAL.Services.IDCCRepository;
@@ -228,5 +229,41 @@ namespace DataCommandCenter.DAL.Services
                 return (flows, allObjects);
             }
         }
+
+        public DCCuser ValidateUserCredentials(string? userName, string? password)
+        {
+            var pwHash = this.GetHashString(password);
+
+            var user = _context.Users.Where(u => u.UserName == userName && u.PasswordHash == pwHash).FirstOrDefault();
+
+            if (user == null)
+                return null;
+
+            return new DCCuser(
+                user.Id,
+                user.UserName,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                user.UserType);
+
+        }
+
+        private string GetHashString(string inputString)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in GetHash(inputString))
+                sb.Append(b.ToString("X2"));
+
+            return sb.ToString();
+        }
+
+        private static byte[] GetHash(string inputString)
+        {
+            using (HashAlgorithm algorithm = SHA256.Create())
+                return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+        }
+
+
     }
 }
