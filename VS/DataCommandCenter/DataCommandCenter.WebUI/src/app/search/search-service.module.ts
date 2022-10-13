@@ -16,9 +16,6 @@ export class SearchService {
   private lineageUrl = '/api/metadata/GetLineageForObject';
 
   jwt!: string;
-  //jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZ2l2ZW5fbmFtZSI6IkRlbW8iLCJmYW1pbHlfbmFtZSI6IlVzZXIiLCJlbWFpbCI6ImRlbW9AdXNlci5vcmciLCJ1c2VyX3R5cGUiOiJBZG1pbiIsIm5iZiI6MTY2NTU5ODE5MCwiZXhwIjoxNjY2MjAyOTkwLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MTE1IiwiYXVkIjoiZGF0YWNvbW1hbmRjZW50ZXJhcGkifQ.xE3za9mtaUq5hOX6_IwS4f_vfcqIudEIY8rywY42qmk";
-
-  
 
   constructor(private http: HttpClient) { }
 
@@ -35,8 +32,6 @@ export class SearchService {
   }
 
   getServers(): Observable<ServerDTO[]> {
-
-
     return this.http.get<ServerDTO[]>(this.serverUrl, { headers: this.getHeaders() })
       .pipe(
         //tap(data => console.log('All: ', JSON.stringify(data))),
