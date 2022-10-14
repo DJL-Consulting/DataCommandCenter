@@ -239,6 +239,10 @@ namespace DataCommandCenter.DAL.Services
             if (user == null)
                 return null;
 
+            user.LastLoginDatetime = DateTime.Now;
+
+            _context.SaveChanges();
+
             return new DCCuser(
                 user.Id,
                 user.UserName,
