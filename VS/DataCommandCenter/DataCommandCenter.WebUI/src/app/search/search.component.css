@@ -1,5 +1,5 @@
 .optionButton {
-  background-color: #0A58CA; /* #337ab7; */
+  background-color: #0A58CA; /* #0A58CA; /* #337ab7; */
   border-color: #2e6da4;
 }
 
@@ -8,9 +8,7 @@
     border-color: #2e6da4;
   }
 
-/* whitesmoke; floralwhite;*/
 .searchOptions {
-  /*background-color: #FCF6F5FF; /*floralwhite;*/
   color: #333333;
 }
 
@@ -27,9 +25,9 @@
 .visNetwork {
   width: 80vw;
   height: 80vh;
-  border: groove 5px #337ab7;
+  border: groove 5px #0A58CA;
   /*1px solid lightgray; */
-  background-color: floralwhite; /*floralwhite; */
+  background-color: white; /*floralwhite; */
 }
 
 .textarea {
@@ -37,14 +35,6 @@
   overflow-y: scroll;
 }
 
-/*.popModal {
-  background-color: aqua;
-  position: absolute !important;
-  left: 50px;
-  top: 50px;
-}*/
-
 .popBox {
-  //background-color: azure;
   width: 500px;
 }

@@ -1,16 +1,23 @@
 .mainPage {
   padding-left: 20px;
-  background-color: #F8F9F9; /*#FCF6F5FF; /* #A2A2A1FF; /* #FCF6F5FF; /* ghostwhite;*/
+  background-color: whitesmoke; /*#FCF6F5FF; /* #A2A2A1FF; /* #FCF6F5FF; /* ghostwhite;*/
 }
 
 .nav-link.active {
-  background-color: #0A58CA;
+  background-color: #FFFFFF; /*#0A58CA; */
+  color: #9A2617;
 }
 
 .nav-link {
-  color: #0A58CA;
+  color: #FFFFFF;
+}
+
+.navbar {
+  background-color: #9A2617;
 }
 
 .navbar-brand {
-  font-size: x-large;
+  color: #FFFFFF;
+  font-weight: 500;
+  font-size: xx-large;
 }

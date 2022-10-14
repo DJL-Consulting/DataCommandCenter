@@ -1,9 +1,19 @@
 .welcomePage {
   height: 90vh;
-  //background-color: floralwhite;
-  color: #0C374D; /*#696667FF  #6E6E6DFF; /* #6E6E6DFF; /* #195190FF; */
+  font-size: larger;
+  font-weight:400;
+  color: black; /*#0C374D; /*#696667FF  #6E6E6DFF; /* #6E6E6DFF; /* #195190FF; */
+}
+
+.box {
+  width: 60vw;
+  border: groove 3px #0A58CA;
+  background-color: floralwhite;
 }
 
 .welcomeHeader {
-  color: #9A2617; /* #990011FF; */
+  color: #333333; /*#9A2617; /* #990011FF; */
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
