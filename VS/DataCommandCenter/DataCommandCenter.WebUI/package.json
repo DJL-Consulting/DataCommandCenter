@@ -25,6 +25,7 @@
     "font-awesome": "^4.7.0",
     "jest-editor-support": "*",
     "jquery": "^3.6.1",
+    "ngx-deploy-npm": "^4.2.5",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "vis-network": "^9.1.2",

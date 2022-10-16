@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,7 @@ export class AuthService {
   }
 
   async login(userName: string, password: string): Promise<boolean> {
-    const creds = { userName: userName, password: password }; 
+    const creds = { userName: userName, password: password };
 
     const response = await this.http.post(this.loginUrl, creds, { responseType: "text" }).pipe(catchError(this.handleError)).toPromise();
 

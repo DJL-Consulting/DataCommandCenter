@@ -2,6 +2,7 @@ import { query } from "@angular/animations";
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, catchError, tap, throwError, map } from "rxjs";
+import { environment } from "../../environments/environment";
 import { LineageDTO } from "../models/LineageDTO";
 import { ServerDTO, ObjectSearch, SearchObjectTypes, MetadataDTO } from "../models/MetadataDTOs";
 
@@ -17,7 +18,7 @@ export class SearchService {
 
   jwt!: string;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {  }
 
   getToken(): string {
     var token = localStorage.getItem('loginToken');
