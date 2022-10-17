@@ -19,7 +19,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   servers: ServerDTO[] = [];
   searchResult: ObjectSearch[] = [];
   lineagedata: LineageDTO = { nodes: [], flows: [] };
-  metadata: MetadataDTO = { servers: [], databases: [], objects: [], columns: [] };
+  metadata: MetadataDTO = { servers: [], databases: [], objects: [], columns: [], integrations: [] };
   defaultSearchSettings: SearchObjectTypes = { SearchType: "Metadata", QueryString: "", Servers: false, Databases: true, Tables: true, Views: true, ProgrammableObjects: true, Columns: true, Integrations: false };
   lineageSearchSettings: SearchObjectTypes = { SearchType: "Lineage", QueryString: "", Servers: false, Databases: false, Tables: true, Views: true, ProgrammableObjects: true, Columns: false, Integrations: true };
   searchSettings: SearchObjectTypes = this.defaultSearchSettings;
@@ -38,11 +38,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
   dbRow?: DatabaseDTO;
   objRow?: ObjectDTO;
   colRow?: ColumnDTO;
+  intRow?: IntegrationDTO;
 
   @ViewChild('serverModal') sdialog!: ElementRef;
   @ViewChild('databaseModal') ddialog!: ElementRef;
   @ViewChild('objectModal') odialog!: ElementRef;
   @ViewChild('columnModal') cdialog!: ElementRef;
+  @ViewChild('intModal') idialog!: ElementRef;
   @ViewChild('lineageModal') ldialog!: ElementRef;
   @ViewChild('integrationModal') fdialog!: ElementRef;
   @ViewChild('network') el!: ElementRef;
@@ -52,6 +54,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   @ViewChild('popupObject') objectPop!: ElementRef;
   @ViewChild('popupColumn') columnPop!: ElementRef;
   @ViewChild('popupIntegration') integrationPop!: ElementRef;
+  @ViewChild('popupInt') intPop!: ElementRef;
   
   sub!: Subscription;
   searchType!: string;
@@ -79,13 +82,27 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.searchType = searchType;
 
     switch (searchType) {
+      case "metadata":
+        this.searchLineage = false;
+        this.searchSettings = this.defaultSearchSettings;
+        break;
+      case "lineage":
+        this.searchLineage = true;
+        this.searchSettings = this.lineageSearchSettings;
+        break;
       case "servers":
+        this.searchLineage = false;
+        this.searchSettings = this.defaultSearchSettings;
         this.getServers();
         break;
       case "databases":
+        this.searchLineage = false;
+        this.searchSettings = this.defaultSearchSettings;
         this.getDatabases();
         break;
       case "integrations":
+        this.searchLineage = true;
+        this.searchSettings = this.lineageSearchSettings;
         this.getIntegrations();
         break;
     }
@@ -141,6 +158,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
   }
 
   getIntegrations(): void {
+    this.sub = this.searchService.GetIntegrations().subscribe({
+      next: res => {
+        this.metadata = res;
+        this.drawMetadata();
+      },
+      error: err => this.errorMessage = err
+    });
   }
 
   getServers(): void {
@@ -174,10 +198,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   searchSelectEvent(item: ObjectSearch) {
     this.hasSearch = true;
-    this.router.navigate(['/search/any']);
 
     this.searchItem = item;
     if (this.searchLineage) {
+      this.router.navigate(['/search/lineage']);
       this.sub = this.searchService.getLineageForObject(item).subscribe({
         next: res => {
           this.lineagedata = res;
@@ -187,6 +211,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
       });
     }
     else {
+      this.router.navigate(['/search/metadata']);
       this.sub = this.searchService.getMetadataForObject(item).subscribe({
         next: res => {
           this.metadata = res;
@@ -251,6 +276,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
         return { unselected: 'assets/images/view.png', selected:'assets/images/view-sel.png'  };
       case "FILE":
         return { unselected: 'assets/images/file.png', selected: 'assets/images/file-sel.png' };
+      case "INTEGRATION":
+        return { unselected: 'assets/images/integration.png', selected: 'assets/images/integration-sel.png' };
       case "":
         return { unselected: 'assets/images/', selected: 'assets/images/' };
     }
@@ -489,6 +516,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
       edges.add({ from: "c" + obj.id.toString(), to: "o" + obj.objectId?.toString(), arrows: "to", color: arrowColor })
     });
 
+    this.metadata.integrations.forEach(function (obj) {
+      nodes.add({ id: "i" + obj.id.toString(), title: ct.intPop.nativeElement, level: 1, label: obj.name, widthConstraint: maxWidth, image: ct.pickImage("integration"), shape: "image", size: 30, chosen: ("i" + obj.id.toString() == sid) })
+      //edges.add({ from: "o" + obj.id.toString(), to: "d" + obj.databaseId?.toString(), arrows: "to", color: arrowColor })
+    });
+
     const data = { nodes, edges };
 
     var options = {
@@ -496,11 +528,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
       interaction: { hover: true },
       layout: {
         clusterThreshold: 150,
-        improvedLayout: true,
-        hierarchical: {
-          enabled: this.searchType == "databases" ? false : true,
-          levelSeparation: this.searchType == "databases" ? 5 : 300,
-          nodeSpacing: this.searchType == "databases" ? 5 : 200,
+        improvedLayout: this.searchType != "metadata" ? false : true,
+        hierarchical: this.searchType != "metadata" ? false : {
+          enabled: true,
+          levelSeparation: 300,
+          nodeSpacing: 200,
           treeSpacing: 1000,
           blockShifting: true,
           edgeMinimization: false,
@@ -530,7 +562,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     //}
 
     var w = 1000;
-    if (sid != "o0")
+    if (this.searchType == "metadata")
       this.networkInstance.setSelection({ nodes: [sid] });
 
 
@@ -551,7 +583,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
       };
 
-      if (sid != "o0")
+      if (ctx.searchType == "metadata")
         ctx.networkInstance.focus(sid, zoptions);
     });
 
@@ -589,6 +621,16 @@ export class SearchComponent implements OnInit, AfterViewInit {
             };
             ctx.searchSelectEvent(newSearchItem);
             break;
+          case "i":
+            ctx.searchSettings = ctx.lineageSearchSettings;
+            var newSearchItem = {
+              objectType: "Integration",
+              id: params.nodes[0].substring(1),
+              searchText: "Search Text",
+              displayText: "Display Text"
+            };           
+            ctx.searchSelectEvent(newSearchItem);
+            break;
           default:
             var newSearchItem = {
               objectType: "SQL Table",
@@ -618,6 +660,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
           break;
         case "c":
           ctx.colRow = ctx.metadata.columns.find((obj) => { return 'c' + obj.id.toString() === selId; })
+          break;
+        case "i":
+          ctx.intRow = ctx.metadata.integrations.find((obj) => { return 'i' + obj.id.toString() === selId; })
           break;
       }
 
@@ -658,6 +703,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
           case "c":
             ctx.colRow = ctx.metadata.columns.find((obj) => { return 'c' + obj.id.toString() === selId; })
             ctx.open(ctx.cdialog);
+            break;
+          case "i":
+            ctx.intRow = ctx.metadata.integrations.find((obj) => { return 'i' + obj.id.toString() === selId; })
+            ctx.open(ctx.idialog);
             break;
         }
       }

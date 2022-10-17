@@ -16,18 +16,22 @@ export class SearchGuard implements CanActivate {
     state: RouterStateSnapshot): boolean | UrlTree {
     let url: string = state.url;
 
-    return this.checkLogin(url);
+    var can = this.checkLogin(url, state);
+
+    return true;
+    //return this.checkLogin(url);
   }
 
-  checkLogin(url: string): true | UrlTree {
+  checkLogin(url: string, state: RouterStateSnapshot): boolean  {  //true | UrlTree
     var val = localStorage.getItem('isUserLoggedIn') == null ? "false" : localStorage.getItem('isUserLoggedIn');
 
     if (val != null && val == "true") {
       if (url == "/login")
-        this.router.parseUrl('/search');
+        this.router.parseUrl('/search/metadata');
       else
         return true;
     }
-      return this.router.parseUrl('/login');
+    this.router.navigate(["/login"], { queryParams: { returnUrl: state.url } })  //.parseUrl('/login');
+    return false;
   }
 }

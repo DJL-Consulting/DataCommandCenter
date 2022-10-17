@@ -42,11 +42,13 @@ namespace DataCommandCenter.API.Controllers
                 var dbs = new List<SqlDatabase>();
                 var objs = new List<SqlObject>();
                 var cols = new List<SqlColumn>();
+                var ints = new List<Integration>();
 
                 retObj.Servers = _mapper.Map<IEnumerable<ServerDTO>>(servers);
                 retObj.Databases = _mapper.Map<IEnumerable<DatabaseDTO>>(dbs);
                 retObj.Objects = _mapper.Map<IEnumerable<ObjectDTO>>(objs);
                 retObj.Columns = _mapper.Map<IEnumerable<ColumnDTO>>(cols);
+                retObj.Integrations = _mapper.Map<IEnumerable<IntegrationDTO>>(ints);
 
                 return Ok(retObj);
             }
@@ -67,11 +69,40 @@ namespace DataCommandCenter.API.Controllers
                 var dbs = await _repository.GetAllDBs(); 
                 var objs = new List<SqlObject>();
                 var cols = new List<SqlColumn>();
+                var ints = new List<Integration>();
 
                 retObj.Servers = _mapper.Map<IEnumerable<ServerDTO>>(servers);
                 retObj.Databases = _mapper.Map<IEnumerable<DatabaseDTO>>(dbs);
                 retObj.Objects = _mapper.Map<IEnumerable<ObjectDTO>>(objs);
                 retObj.Columns = _mapper.Map<IEnumerable<ColumnDTO>>(cols);
+                retObj.Integrations = _mapper.Map<IEnumerable<IntegrationDTO>>(ints);
+
+                return Ok(retObj);
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("GetIntegrations")]
+        public async Task<ActionResult<MetadataDTO>> GetIntegrations()
+        {
+            try
+            {
+                var retObj = new MetadataDTO();
+
+                var servers = new List<Server>(); 
+                var dbs = new List<SqlDatabase>();
+                var objs = new List<SqlObject>();
+                var cols = new List<SqlColumn>();
+                var ints = await _repository.GetAllIntegrations();
+
+                retObj.Servers = _mapper.Map<IEnumerable<ServerDTO>>(servers);
+                retObj.Databases = _mapper.Map<IEnumerable<DatabaseDTO>>(dbs);
+                retObj.Objects = _mapper.Map<IEnumerable<ObjectDTO>>(objs);
+                retObj.Columns = _mapper.Map<IEnumerable<ColumnDTO>>(cols);
+                retObj.Integrations = _mapper.Map<IEnumerable<IntegrationDTO>>(ints);
 
                 return Ok(retObj);
             }
@@ -110,11 +141,13 @@ namespace DataCommandCenter.API.Controllers
                 var dbs = await _repository.GetDBsForObject(selectedItem);
                 var objs = await _repository.GetObjectsForObject(selectedItem);
                 var cols = await _repository.GetColumnsForObject(selectedItem);
+                var ints = new List<Integration>();
 
                 retObj.Servers = _mapper.Map<IEnumerable<ServerDTO>>(servers);
                 retObj.Databases = _mapper.Map<IEnumerable<DatabaseDTO>>(dbs);
                 retObj.Objects = _mapper.Map<IEnumerable<ObjectDTO>>(objs);
                 retObj.Columns = _mapper.Map<IEnumerable<ColumnDTO>>(cols);
+                retObj.Integrations = _mapper.Map<IEnumerable<IntegrationDTO>>(ints);
 
                 return Ok(retObj);
             }

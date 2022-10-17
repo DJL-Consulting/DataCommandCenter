@@ -12,5 +12,6 @@ namespace DataCommandCenter.DAL.DTO
         public IEnumerable<DatabaseDTO>? Databases { get; set; }
         public IEnumerable<ObjectDTO>? Objects { get; set; }
         public IEnumerable<ColumnDTO>? Columns { get; set; }
+        public IEnumerable<IntegrationDTO> Integrations { get; set; }
     }
 }

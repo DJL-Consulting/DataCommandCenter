@@ -13,6 +13,7 @@ import { ServerDTO, ObjectSearch, SearchObjectTypes, MetadataDTO } from "../mode
 export class SearchService {
   private serverUrl = '/api/metadata/GetServers';  //https://localhost:7115
   private DBUrl = '/api/metadata/GetDatabases';  
+  private integrationUrl = '/api/metadata/GetIntegrations';  
   private searchUrl = '/api/metadata/SearchObjects'; 
   private metadataUrl = '/api/metadata/GetMetadataForObject';  
   private lineageUrl = '/api/metadata/GetLineageForObject';
@@ -35,6 +36,14 @@ export class SearchService {
 
   getServers(): Observable<MetadataDTO> {
     return this.http.get<MetadataDTO>(this.serverUrl, { headers: this.getHeaders() })
+      .pipe(
+        //tap(data => console.log('All: ', JSON.stringify(data))),
+        catchError(this.handleError)
+      );
+  }
+  
+  GetIntegrations(): Observable<MetadataDTO> {
+    return this.http.get<MetadataDTO>(this.integrationUrl, { headers: this.getHeaders() })
       .pipe(
         //tap(data => console.log('All: ', JSON.stringify(data))),
         catchError(this.handleError)

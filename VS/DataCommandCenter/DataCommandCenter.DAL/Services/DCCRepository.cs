@@ -80,6 +80,10 @@ namespace DataCommandCenter.DAL.Services
             return await _context.SqlDatabases.Include(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlDatabase>();
         }
 
+        public async Task<IEnumerable<Integration>> GetAllIntegrations()
+        {
+            return await _context.Integrations.ToListAsync();
+        }
 
         public async Task<IEnumerable<SqlDatabase>> GetDBsForObject(ObjectSearch SelectedItem)
         {
@@ -155,7 +159,7 @@ namespace DataCommandCenter.DAL.Services
 
             if (objType == "INTEGRATION")
             {
-                var flows = await _context.LineageFlows.Where(o => o.IntegrationFlowId != null).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync();
+                var flows = await _context.LineageFlows.Where(o => o.IntegrationFlowId != null && o.IntegrationFlowId == SelectedItem.Id).Include(l => l.IntegrationFlow).Include(i => i.IntegrationFlow.Integration).ToListAsync();
 
                 var sourceIds = flows.Select(s => s.SourceObjectId);
                 var destIds = flows.Select(d => d.DestinationObjectId);

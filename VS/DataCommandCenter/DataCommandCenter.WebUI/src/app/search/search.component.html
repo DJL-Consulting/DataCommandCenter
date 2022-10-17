@@ -106,108 +106,108 @@
 
 
 <ng-template #lineageModal let-modal>
-    <div class="modal-header text-center">
-      <h4 class="modal-title" id="modal-basic-title">{{ lineageRow?.objectType}} {{ lineageRow?.objectName }}</h4>
-      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-        <span aria-hidden="true">×</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <div class="container">
+  <div class="modal-header text-center">
+    <h4 class="modal-title" id="modal-basic-title">{{ lineageRow?.objectType}} {{ lineageRow?.objectName }}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="container">
 
-        <div class="row">
-          <div class="col-6 text-end">
-            <b>Server:</b>
-          </div>
-          <div class="col-6 text-start">
-            {{  ( (lineageRow != undefined) ? lineageRow.title.split('\n')[0] : "") }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-6 text-end">
-            <b>Database:</b>
-          </div>
-          <div class="col-6 text-start">
-            {{ ( (lineageRow != undefined) ? lineageRow.title.split('\n')[1] : "") }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-6 text-end">
-            <b>Schema:</b>
-          </div>
-          <div class="col-6 text-start">
-            {{ lineageRow?.schemaName }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-6 text-end">
-            <b>Object Type:</b>
-          </div>
-          <div class="col-6 text-start">
-            {{ lineageRow?.objectType }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-6 text-end">
-            <b>Object Name:</b>
-          </div>
-          <div class="col-6 text-start">
-            {{ lineageRow?.objectName }}
-          </div>
-        </div>
-
-        <div *ngIf="lineageRow?.description != null" class="row">
-          <div class="col-6 text-end">
-            <b>Description:</b>
-          </div>
-          <div class="col-6 text-start">
-            {{ lineageRow?.description }}
-          </div>
-        </div>
-
-        <div *ngIf="lineageRow?.rows != null" class="row">
-          <div class="col-6 text-end">
-            <b>Row Count:</b>
-          </div>
-          <div class="col-6 text-start">
-            {{ lineageRow?.rows }}
-          </div>
-        </div>
-
-        <div *ngIf="lineageRow?.sizeMb != null" class="row">
-          <div class="col-6 text-end">
-            <b>Size (MB):</b>
-          </div>
-          <div class="col-6 text-start">
-            {{ lineageRow?.sizeMb }}
-          </div>
-        </div>
-
-        <div *ngIf="lineageRow?.objectDefinition != null" class="row">
-          <div class="col-6 text-end">
-            <b>Object Definition:</b>
-          </div>
-          <div class="col-6 textarea text-start">
-            {{ lineageRow?.objectDefinition }}
-          </div>
-        </div>
-
-      </div>
-
-      <div *ngFor="let item of lineageRow?.metadataDictionary" class="row">
+      <div class="row">
         <div class="col-6 text-end">
-          <b>{{ item.key }}:</b>
+          <b>Server:</b>
         </div>
         <div class="col-6 text-start">
-          {{ item.value }}
+          {{  ( (lineageRow != undefined) ? lineageRow.title.split('\n')[0] : "") }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Database:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ ( (lineageRow != undefined) ? lineageRow.title.split('\n')[1] : "") }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Schema:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.schemaName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Object Type:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.objectType }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Object Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.objectName }}
+        </div>
+      </div>
+
+      <div *ngIf="lineageRow?.description != null" class="row">
+        <div class="col-6 text-end">
+          <b>Description:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.description }}
+        </div>
+      </div>
+
+      <div *ngIf="lineageRow?.rows != null" class="row">
+        <div class="col-6 text-end">
+          <b>Row Count:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.rows }}
+        </div>
+      </div>
+
+      <div *ngIf="lineageRow?.sizeMb != null" class="row">
+        <div class="col-6 text-end">
+          <b>Size (MB):</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.sizeMb }}
+        </div>
+      </div>
+
+      <div *ngIf="lineageRow?.objectDefinition != null" class="row">
+        <div class="col-6 text-end">
+          <b>Object Definition:</b>
+        </div>
+        <div class="col-6 textarea text-start">
+          {{ lineageRow?.objectDefinition }}
         </div>
       </div>
 
     </div>
+
+    <div *ngFor="let item of lineageRow?.metadataDictionary" class="row">
+      <div class="col-6 text-end">
+        <b>{{ item.key }}:</b>
+      </div>
+      <div class="col-6 text-start">
+        {{ item.value }}
+      </div>
+    </div>
+
+  </div>
 </ng-template>
 
 
@@ -390,6 +390,84 @@
     </div>
   </div>
 </ng-template>
+
+<ng-template #intModal let-modal>
+  <div class="modal-header text-center">
+    <h4 class="modal-title" id="modal-basic-title">Integration {{ intRow?.name }}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="container">
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Integration Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.name }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Integration Type:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.integrationType }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Path:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.path }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Description:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.description }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Craeted:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.created }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Modified:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.lastModified }}
+        </div>
+      </div>
+
+      <div *ngFor="let item of intRow?.metadataDictionary" class="row">
+        <div class="col-6 text-end">
+          <b>{{ item.key }}:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ item.value }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</ng-template>
+
 
 <ng-template #objectModal let-modal>
   <div class="modal-header text-center">
@@ -760,402 +838,459 @@
         {{ flowRow?.integration?.lastModified }}
       </div>
     </div>
-
   </div>
 
-  <div #popupServer class="container popBox">
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Server Name:</b>
+  <div style="visibility: hidden">
+    <div #popupInt class="container popBox">
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Integration Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.name }}
+        </div>
       </div>
-      <div class="col-6 text-start">
-        {{ serverRow?.serverName }}
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Integration Type:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.integrationType }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Path:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.path }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Description:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.description }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Created Date:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.created }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Modified Date:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ intRow?.lastModified }}
+        </div>
       </div>
     </div>
 
-    <div *ngIf="serverRow?.serverInstance != null && serverRow?.serverInstance != ''" class="row">
-      <div class="col-6 text-end">
-        <b>Server Instance:</b>
+    <div #popupServer class="container popBox">
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Server Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ serverRow?.serverName }}
+        </div>
       </div>
-      <div class="col-6 text-start">
-        {{ serverRow?.serverInstance }}
+
+      <div *ngIf="serverRow?.serverInstance != null && serverRow?.serverInstance != ''" class="row">
+        <div class="col-6 text-end">
+          <b>Server Instance:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ serverRow?.serverInstance }}
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Server Type:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ serverRow?.serverType }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Version:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ serverRow?.version }}
+        </div>
+      </div>
+    </div>
+    <div #popupDatabase class="container popBox">
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Server Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.serverName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Database Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.databaseName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Compatability:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.compatability }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Recovery Mode:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.recovery }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Created On:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.createdDatetime }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Collation:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.collation }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Access Mode:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.access }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Is Read Only:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.readOnly }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Data Size (MB):</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.dataSizeMb }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Log Size (MB):</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.logSizeMb }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Description:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ dbRow?.description }}
+        </div>
+      </div>
+    </div>
+    <div #popupObject class="container popBox">
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Server Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ objRow?.serverName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Database Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ objRow?.databaseName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Object Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ objRow?.objectName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Schema:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ objRow?.schemaName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Object Type:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ objRow?.objectType }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Object Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ objRow?.objectName }}
+        </div>
+      </div>
+
+      <div *ngIf="objRow?.description != null" class="row">
+        <div class="col-6 text-end">
+          <b>Description:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ objRow?.description }}
+        </div>
+      </div>
+
+      <div *ngIf="objRow?.rows != null" class="row">
+        <div class="col-6 text-end">
+          <b>Row Count:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ objRow?.rows }}
+        </div>
+      </div>
+
+      <div *ngIf="objRow?.sizeMb != null" class="row">
+        <div class="col-6 text-end">
+          <b>Size (MB):</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ objRow?.sizeMb }}
+        </div>
       </div>
     </div>
 
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Server Type:</b>
+    <div #popupColumn class="container popBox">
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Server Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.serverName }}
+        </div>
       </div>
-      <div class="col-6 text-start">
-        {{ serverRow?.serverType }}
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Database Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.databaseName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Object Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.objectName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Column Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.columnName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Data Type:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.dataType }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Length:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.maxLength }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Precision:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.precision }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Scale:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.scale }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Nullable:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.nullable }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Is Primary Key:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.primaryKey }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Description:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ colRow?.description }}
+        </div>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Version:</b>
+    <div #popupTable class="container popBox">
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Server:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{  ( (lineageRow != undefined) ? lineageRow.title.split('\n')[0] : "") }}
+        </div>
       </div>
-      <div class="col-6 text-start">
-        {{ serverRow?.version }}
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Database:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ ( (lineageRow != undefined) ? lineageRow.title.split('\n')[1] : "") }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Schema:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.schemaName }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Object Type:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.objectType }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 text-end">
+          <b>Object Name:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.objectName }}
+        </div>
+      </div>
+
+      <div *ngIf="lineageRow?.description != null" class="row">
+        <div class="col-6 text-end">
+          <b>Description:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.description }}
+        </div>
+      </div>
+
+      <div *ngIf="lineageRow?.rows != null" class="row">
+        <div class="col-6 text-end">
+          <b>Row Count:</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.rows }}
+        </div>
+      </div>
+
+      <div *ngIf="lineageRow?.sizeMb != null" class="row">
+        <div class="col-6 text-end">
+          <b>Size (MB):</b>
+        </div>
+        <div class="col-6 text-start">
+          {{ lineageRow?.sizeMb }}
+        </div>
       </div>
     </div>
   </div>
-  <div #popupDatabase class="container popBox">
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Server Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.serverName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Database Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.databaseName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Compatability:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.compatability }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Recovery Mode:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.recovery }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Created On:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.createdDatetime }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Collation:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.collation }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Access Mode:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.access }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Is Read Only:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.readOnly }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Data Size (MB):</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.dataSizeMb }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Log Size (MB):</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.logSizeMb }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Description:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ dbRow?.description }}
-      </div>
-    </div>
-  </div>
-  <div #popupObject class="container popBox">
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Server Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ objRow?.serverName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Database Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ objRow?.databaseName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Object Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ objRow?.objectName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Schema:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ objRow?.schemaName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Object Type:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ objRow?.objectType }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Object Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ objRow?.objectName }}
-      </div>
-    </div>
-
-    <div *ngIf="objRow?.description != null" class="row">
-      <div class="col-6 text-end">
-        <b>Description:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ objRow?.description }}
-      </div>
-    </div>
-
-    <div *ngIf="objRow?.rows != null" class="row">
-      <div class="col-6 text-end">
-        <b>Row Count:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ objRow?.rows }}
-      </div>
-    </div>
-
-    <div *ngIf="objRow?.sizeMb != null" class="row">
-      <div class="col-6 text-end">
-        <b>Size (MB):</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ objRow?.sizeMb }}
-      </div>
-    </div>
-  </div>
-
-  <div #popupColumn class="container popBox">
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Server Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.serverName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Database Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.databaseName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Object Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.objectName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Column Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.columnName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Data Type:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.dataType }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Length:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.maxLength }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Precision:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.precision }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Scale:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.scale }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Nullable:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.nullable }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Is Primary Key:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.primaryKey }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Description:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ colRow?.description }}
-      </div>
-    </div>
-  </div>
-
-  <div #popupTable class="container popBox">
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Server:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{  ( (lineageRow != undefined) ? lineageRow.title.split('\n')[0] : "") }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Database:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ ( (lineageRow != undefined) ? lineageRow.title.split('\n')[1] : "") }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Schema:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ lineageRow?.schemaName }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Object Type:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ lineageRow?.objectType }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-6 text-end">
-        <b>Object Name:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ lineageRow?.objectName }}
-      </div>
-    </div>
-
-    <div *ngIf="lineageRow?.description != null" class="row">
-      <div class="col-6 text-end">
-        <b>Description:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ lineageRow?.description }}
-      </div>
-    </div>
-
-    <div *ngIf="lineageRow?.rows != null" class="row">
-      <div class="col-6 text-end">
-        <b>Row Count:</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ lineageRow?.rows }}
-      </div>
-    </div>
-
-    <div *ngIf="lineageRow?.sizeMb != null" class="row">
-      <div class="col-6 text-end">
-        <b>Size (MB):</b>
-      </div>
-      <div class="col-6 text-start">
-        {{ lineageRow?.sizeMb }}
-      </div>
-    </div>
-  </div>
-</div>

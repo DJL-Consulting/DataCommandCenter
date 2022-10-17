@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { AuthService } from '../auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SearchService } from "../search/search-service.module";
 
@@ -16,10 +16,12 @@ export class LoginComponent implements OnInit {
   password!: string;
   formData!: FormGroup;
   sub!: Subscription;
+  returnUrl!: string;
   
-  constructor(private authService: AuthService, private router: Router, private searchService: SearchService) { }
+  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute, private searchService: SearchService) { }
 
   ngOnInit() {
+    this.returnUrl = this.route.snapshot.queryParams["returnUrl"] || "/search/metadata";
     this.formData = new FormGroup({
       userName: new FormControl("demo"),
       password: new FormControl("demo"),
@@ -35,7 +37,7 @@ export class LoginComponent implements OnInit {
     var isLoggedIn = await this.authService.login(this.userName, this.password);
 
     if (isLoggedIn)
-      this.router.navigate(['/search/any']);
+      this.router.navigate([this.returnUrl]);  //(['/search/metadata']);
     else
       alert("Login failed!");
   }

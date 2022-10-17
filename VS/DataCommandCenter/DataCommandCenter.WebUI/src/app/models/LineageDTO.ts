@@ -1,4 +1,3 @@
-import { PropertyDTO } from "./PropertyDTO";
 import { Property } from "./MetadataDTOs"
 
 export interface LineageNode {
@@ -25,6 +24,7 @@ export interface IntegrationDTO {
   lastModified: string | null;
   metadataDictionary: Property[] | null;
 }
+
 export interface LineageLink {
   id: number;
   sourceObjectId: number | null;

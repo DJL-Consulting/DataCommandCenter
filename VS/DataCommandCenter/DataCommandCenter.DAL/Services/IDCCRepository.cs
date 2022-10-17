@@ -35,6 +35,7 @@ namespace DataCommandCenter.DAL.Services
         Task<IEnumerable<Server>> GetAllServers();
         Task<IEnumerable<Server>> GetServersForObject(ObjectSearch SelectedItem);
         Task<IEnumerable<SqlDatabase>> GetAllDBs();
+        Task<IEnumerable<Integration>> GetAllIntegrations();
         Task<IEnumerable<SqlDatabase>> GetDBsForObject(ObjectSearch SelectedItem);
         Task<IEnumerable<SqlObject>> GetObjectsForObject(ObjectSearch SelectedItem);
         Task<IEnumerable<SqlColumn>> GetColumnsForObject(ObjectSearch SelectedItem);

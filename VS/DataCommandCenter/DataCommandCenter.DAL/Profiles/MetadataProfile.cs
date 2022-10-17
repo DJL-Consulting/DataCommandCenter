@@ -53,6 +53,7 @@ namespace DataCommandCenter.DAL.Profiles
                 .ForMember(dest => dest.ServerName, opt => opt.MapFrom(src => src.Object.Database.Server.ServerName))
                 .ForMember(dest => dest.DatabaseName, opt => opt.MapFrom(src => src.Object.Database.DatabaseName))
                 .ForMember(dest => dest.ObjectName, opt => opt.MapFrom(src => src.Object.ObjectName));
+            CreateMap<Models.Integration, DTO.IntegrationDTO>();
             CreateMap<Models.Integration, DTO.LineageDTO>();
             CreateMap<Models.Property, DTO.PropertyDTO>()
                 .ForMember(dest => dest.Key, opt => opt.MapFrom(src => src.Property1));

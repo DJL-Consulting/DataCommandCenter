@@ -1,3 +1,5 @@
+import { IntegrationDTO } from "./LineageDTO";
+
 export interface Header {
   id: number;
 }
@@ -75,6 +77,7 @@ export interface MetadataDTO {
   databases: DatabaseDTO[];
   objects: ObjectDTO[];
   columns: ColumnDTO[];
+  integrations: IntegrationDTO[];
 }
 
 export interface ObjectSearch {
