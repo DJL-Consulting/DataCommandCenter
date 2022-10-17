@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
     var isLoggedIn = await this.authService.login(this.userName, this.password);
 
     if (isLoggedIn)
-      this.router.navigate(['/search']);
+      this.router.navigate(['/search/any']);
     else
       alert("Login failed!");
   }

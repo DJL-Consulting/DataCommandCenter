@@ -53,6 +53,11 @@ namespace DataCommandCenter.DAL.Services
             //return await _context.ObjectSearches.Where(o => o.SearchText.Contains("")).ToListAsync<ObjectSearch>(); ;
         }
 
+        public async Task<IEnumerable<Server>> GetAllServers()
+        {
+            return await _context.Servers.Include(s => s.ServerType).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<Server>();
+        }
+
         public async Task<IEnumerable<Server>> GetServersForObject(ObjectSearch SelectedItem)
         {
             var objType = SelectedItem.ObjectType.ToUpper();
@@ -69,6 +74,12 @@ namespace DataCommandCenter.DAL.Services
                     return await _context.Servers.Include(s => s.ServerType).Where(s => s.SqlDatabases.Any(d => d.SqlObjects.Any(o => o.Id == SelectedItem.Id))).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<Server>();
             }
         }
+
+        public async Task<IEnumerable<SqlDatabase>> GetAllDBs()
+        {
+            return await _context.SqlDatabases.Include(o => o.Server).Include(h => h.Header).ThenInclude(p => p.Properties).ToListAsync<SqlDatabase>();
+        }
+
 
         public async Task<IEnumerable<SqlDatabase>> GetDBsForObject(ObjectSearch SelectedItem)
         {

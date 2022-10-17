@@ -32,6 +32,7 @@ import { ReactiveFormsModule } from '@angular/forms';
       { path: 'logout', component: LogoutComponent },
       { path: 'welcome', component: WelcomeComponent },
       { path: 'search', component: SearchComponent, canActivate: [SearchGuard] },
+      { path: 'search/:search', component: SearchComponent, canActivate: [SearchGuard] },
       { path: '', redirectTo: 'welcome', pathMatch: 'full' },
       { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
     ]),

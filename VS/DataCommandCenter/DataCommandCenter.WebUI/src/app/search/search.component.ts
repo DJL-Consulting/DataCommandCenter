@@ -7,6 +7,7 @@ import { SearchService } from "./search-service.module";
 import { Network } from 'vis-network';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { DataSet } from "vis-data/peer/esm/vis-data"
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -53,6 +54,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   @ViewChild('popupIntegration') integrationPop!: ElementRef;
   
   sub!: Subscription;
+  searchType!: string;
   errorMessage = '';
   keyword = "displayText";
   searchItem: ObjectSearch = {
@@ -64,7 +66,30 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   private networkInstance: any;
 
-  constructor(private searchService: SearchService, private modalService: NgbModal) { }
+  constructor(private searchService: SearchService, private modalService: NgbModal, private route: ActivatedRoute, private router: Router) {
+    this.route.paramMap.subscribe(      // params can change 
+      params => this.handleSearch(params.get('search')) // params.get('search');
+    );
+  }
+
+  handleSearch(searchType: string | null): void {
+    if (searchType == null)
+      return;
+
+    this.searchType = searchType;
+
+    switch (searchType) {
+      case "servers":
+        this.getServers();
+        break;
+      case "databases":
+        this.getDatabases();
+        break;
+      case "integrations":
+        this.getIntegrations();
+        break;
+    }
+  }
 
   async open(content: any) {
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -105,13 +130,28 @@ export class SearchComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
   }
 
-  getServers(): void {
-    this.sub = this.searchService.getServers().subscribe({
-      next: res => {        
-        this.servers = res;
+  getDatabases(): void {
+    this.sub = this.searchService.getDatabases().subscribe({
+      next: res => {
+        this.metadata = res;
+        this.drawMetadata();
       },
       error: err => this.errorMessage = err
     });
+  }
+
+  getIntegrations(): void {
+  }
+
+  getServers(): void {
+    this.sub = this.searchService.getServers().subscribe({
+      next: res => {
+        this.metadata = res;
+        this.drawMetadata();
+      },
+      error: err => this.errorMessage = err
+    });
+
   }
 
   doSearch(query: string): void {
@@ -134,6 +174,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   searchSelectEvent(item: ObjectSearch) {
     this.hasSearch = true;
+    this.router.navigate(['/search/any']);
 
     this.searchItem = item;
     if (this.searchLineage) {
@@ -416,6 +457,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     maxItems = (this.metadata.columns.length > maxItems) ? this.metadata.columns.length : maxItems;
 
     var sid = "o";
+
     if (this.searchItem?.objectType.toUpperCase() == "SERVER")
       sid = "s";
     if (this.searchItem?.objectType.toUpperCase() == "DATABASE")
@@ -456,9 +498,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
         clusterThreshold: 150,
         improvedLayout: true,
         hierarchical: {
-          enabled: true,
-          levelSeparation: 300,
-          nodeSpacing: 200,
+          enabled: this.searchType == "databases" ? false : true,
+          levelSeparation: this.searchType == "databases" ? 5 : 300,
+          nodeSpacing: this.searchType == "databases" ? 5 : 200,
           treeSpacing: 1000,
           blockShifting: true,
           edgeMinimization: false,
@@ -488,7 +530,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
     //}
 
     var w = 1000;
-    this.networkInstance.setSelection({ nodes: [sid] });
+    if (sid != "o0")
+      this.networkInstance.setSelection({ nodes: [sid] });
 
 
     var ctx = this;
@@ -508,7 +551,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
       };
 
-      ctx.networkInstance.focus(sid, zoptions);
+      if (sid != "o0")
+        ctx.networkInstance.focus(sid, zoptions);
     });
 
 

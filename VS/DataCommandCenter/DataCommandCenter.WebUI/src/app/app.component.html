@@ -3,10 +3,13 @@
   <!-- <h4 id="tableLabel">Data Command Center</h4> -->
 
   <nav class='navbar navbar-expand navbar-dark'>
-    <a class='navbar-brand'>&nbsp;&nbsp;<i class="fa fa-database"></i> &nbsp;{{title}}</a>
+    <a class='navbar-brand'>&nbsp;&nbsp;{{title}}</a>
     <ul class='nav nav-pills'>
       <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/welcome'>Home</a></li>
-      <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/search'>Search Metadata</a></li>
+      <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/search/any'>Search Metadata</a></li>
+      <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/search/servers'><i class="fa fa-server"></i> &nbsp;Servers</a></li>
+      <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/search/databases'><i class="fa fa-database"></i> &nbsp;Databases</a></li>
+      <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/search/integrations'><i class="fa fa-arrows"></i> &nbsp;Integrations</a></li>
       <li class="nav-item">
         <div *ngIf="isUserLoggedIn(); else isLogOut">
           <a class="nav-link" routerLink="/logout">Logout</a>

@@ -32,11 +32,53 @@ namespace DataCommandCenter.API.Controllers
 
         [HttpGet]
         [Route("GetServers")]
-        public async Task<ActionResult<IEnumerable<ServerDTO>>> GetServers()
+        public async Task<ActionResult<MetadataDTO>> GetServers()
         {
-            var servers = await _repository.GetServers();
+            try
+            {
+                var retObj = new MetadataDTO();
 
-            return Ok(_mapper.Map<IEnumerable<ServerDTO>>(servers));   
+                var servers = await _repository.GetAllServers();
+                var dbs = new List<SqlDatabase>();
+                var objs = new List<SqlObject>();
+                var cols = new List<SqlColumn>();
+
+                retObj.Servers = _mapper.Map<IEnumerable<ServerDTO>>(servers);
+                retObj.Databases = _mapper.Map<IEnumerable<DatabaseDTO>>(dbs);
+                retObj.Objects = _mapper.Map<IEnumerable<ObjectDTO>>(objs);
+                retObj.Columns = _mapper.Map<IEnumerable<ColumnDTO>>(cols);
+
+                return Ok(retObj);
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("GetDatabases")]
+        public async Task<ActionResult<MetadataDTO>> GetDatabases()
+        {
+            try
+            {
+                var retObj = new MetadataDTO();
+
+                var servers = new List<Server>(); //await _repository.GetAllServers();
+                var dbs = await _repository.GetAllDBs(); 
+                var objs = new List<SqlObject>();
+                var cols = new List<SqlColumn>();
+
+                retObj.Servers = _mapper.Map<IEnumerable<ServerDTO>>(servers);
+                retObj.Databases = _mapper.Map<IEnumerable<DatabaseDTO>>(dbs);
+                retObj.Objects = _mapper.Map<IEnumerable<ObjectDTO>>(objs);
+                retObj.Columns = _mapper.Map<IEnumerable<ColumnDTO>>(cols);
+
+                return Ok(retObj);
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+            }
         }
 
         [HttpPost]
