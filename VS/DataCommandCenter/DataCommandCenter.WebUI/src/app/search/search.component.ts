@@ -70,14 +70,16 @@ export class SearchComponent implements OnInit, AfterViewInit {
   private networkInstance: any;
 
   constructor(private searchService: SearchService, private modalService: NgbModal, private route: ActivatedRoute, private router: Router) {
-    this.route.paramMap.subscribe(      // params can change 
-      params => this.handleSearch(params.get('search')) // params.get('search');
+    this.route.paramMap.subscribe(      // params can change      
+      params =>  this.handleSearch(params.get('search')) // params.get('search');
     );
   }
 
-  handleSearch(searchType: string | null): void {
+  async handleSearch(searchType: string | null): Promise<void> {
     if (searchType == null)
       return;
+
+    await new Promise(r => setTimeout(r, 200));
 
     this.searchType = searchType;
 
@@ -85,10 +87,18 @@ export class SearchComponent implements OnInit, AfterViewInit {
       case "metadata":
         this.searchLineage = false;
         this.searchSettings = this.defaultSearchSettings;
+        if (this.hasSearch)
+          this.searchSelectEvent(this.searchItem);
+        else
+          this.searchChangeSearch(this.searchText);
         break;
       case "lineage":
         this.searchLineage = true;
         this.searchSettings = this.lineageSearchSettings;
+        if (this.hasSearch)
+          this.searchSelectEvent(this.searchItem);
+        else
+          this.searchChangeSearch(this.searchText);
         break;
       case "servers":
         this.searchLineage = false;
@@ -114,7 +124,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     if (this.doubleclick)
       return;
 
-    var opt: NgbModalOptions = { animation: true, centered: true, size: "md", keyboard: true, backdrop: false }
+    var opt: NgbModalOptions = { animation: true, centered: true, size: "lg", keyboard: true, backdrop: true }
 
     this.modalService.open(content, opt).result;
   }
@@ -482,6 +492,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     maxItems = (this.metadata.databases.length > maxItems) ? this.metadata.databases.length : maxItems;
     maxItems = (this.metadata.objects.length > maxItems) ? this.metadata.objects.length : maxItems;
     maxItems = (this.metadata.columns.length > maxItems) ? this.metadata.columns.length : maxItems;
+    maxItems = (this.metadata.integrations.length > maxItems) ? this.metadata.integrations.length : maxItems;
 
     var sid = "o";
 
@@ -495,13 +506,25 @@ export class SearchComponent implements OnInit, AfterViewInit {
     sid = sid + this.searchItem?.id.toString();
 
     var ct = this;
+    var iCount = 0;
 
     this.metadata.servers.forEach(function (obj) {
-      nodes.add({ id: "s" + obj.id.toString(), title: ct.serverPop.nativeElement, level: 1, label: obj.serverName, widthConstraint: maxWidth, image: { unselected: 'assets/images/server.png', selected: 'assets/images/server-sel.png' }, shape: "image", size: 30, chosen: ("s" + obj.id.toString() == sid) })
+      if (ct.searchType != "metadata") {
+        nodes.add({ id: "s" + obj.id.toString(), title: ct.serverPop.nativeElement, x: (iCount % 6) * 200, y: Math.floor(iCount / 6) * 150, label: obj.serverName, widthConstraint: maxWidth+200, image: { unselected: 'assets/images/server.png', selected: 'assets/images/server-sel.png' }, shape: "image", size: 30, chosen: ("s" + obj.id.toString() == sid) })
+        iCount++;
+      }
+      else
+        nodes.add({ id: "s" + obj.id.toString(), title: ct.serverPop.nativeElement, level: 1, label: obj.serverName, widthConstraint: maxWidth, image: { unselected: 'assets/images/server.png', selected: 'assets/images/server-sel.png' }, shape: "image", size: 30, chosen: ("s" + obj.id.toString() == sid) })
     });
 
+    iCount = 0;
     this.metadata.databases.forEach(function (obj) {
-      nodes.add({ id: "d" + obj.id.toString(), title: ct.databasePop.nativeElement, level: 2, label: obj.databaseName, widthConstraint: maxWidth, image: { unselected: 'assets/images/db2.png', selected: 'assets/images/db2-sel.png' }, shape: "image", size: 30, chosen: ("d" + obj.id.toString() == sid) })
+      if (ct.searchType != "metadata") {
+        nodes.add({ id: "d" + obj.id.toString(), title: ct.databasePop.nativeElement, x: (iCount % 6) * 200, y: Math.floor(iCount / 6) * 150, label: obj.databaseName, widthConstraint: maxWidth+200, image: { unselected: 'assets/images/db2.png', selected: 'assets/images/db2-sel.png' }, shape: "image", size: 30, chosen: ("d" + obj.id.toString() == sid) })
+        iCount++;
+      }
+      else
+          nodes.add({ id: "d" + obj.id.toString(), title: ct.databasePop.nativeElement, level: 2, label: obj.databaseName, widthConstraint: maxWidth, image: { unselected: 'assets/images/db2.png', selected: 'assets/images/db2-sel.png' }, shape: "image", size: 30, chosen: ("d" + obj.id.toString() == sid) })
       edges.add({ from: "d" + obj.id.toString(), to: "s" + obj.serverId?.toString(), arrows: "to", color: arrowColor })
     });
 
@@ -517,7 +540,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
     });
 
     this.metadata.integrations.forEach(function (obj) {
-      nodes.add({ id: "i" + obj.id.toString(), title: ct.intPop.nativeElement, level: 1, label: obj.name, widthConstraint: maxWidth, image: ct.pickImage("integration"), shape: "image", size: 30, chosen: ("i" + obj.id.toString() == sid) })
+      iCount++;
+      nodes.add({ id: "i" + obj.id.toString(), title: ct.intPop.nativeElement, x: (iCount % 6) * 200, y: Math.floor(iCount / 8) * 150,  label: obj.name, widthConstraint: maxWidth+200, image: ct.pickImage("integration"), shape: "image", size: 30, chosen: ("i" + obj.id.toString() == sid) })
       //edges.add({ from: "o" + obj.id.toString(), to: "d" + obj.databaseId?.toString(), arrows: "to", color: arrowColor })
     });
 
@@ -528,12 +552,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
       interaction: { hover: true },
       layout: {
         clusterThreshold: 150,
-        improvedLayout: this.searchType != "metadata" ? false : true,
-        hierarchical: this.searchType != "metadata" ? false : {
-          enabled: true,
+        improvedLayout: true, //this.searchType != "metadata" ? false : 
+        hierarchical: {  
+          enabled: this.searchType != "metadata" ? false : true,
           levelSeparation: 300,
           nodeSpacing: 200,
-          treeSpacing: 1000,
+          treeSpacing: 200,
           blockShifting: true,
           edgeMinimization: false,
           parentCentralization: true,
@@ -545,8 +569,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
         },
       },
       physics: {
+        enabled: this.searchType != "metadata" ? false : true,
         hierarchicalRepulsion: {
-          nodeDistance: (100 + (maxItems * 3)),
+          nodeDistance: (150 + (maxItems * 3)),
         }
       }
     };

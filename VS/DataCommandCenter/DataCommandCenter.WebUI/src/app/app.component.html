@@ -3,7 +3,7 @@
   <!-- <h4 id="tableLabel">Data Command Center</h4> -->
 
   <nav class='navbar navbar-expand navbar-dark'>
-    <a class='navbar-brand'>&nbsp;<i class="fa fa-fort-awesome"></i>&nbsp;&nbsp;{{title}}</a>
+    <a class='navbar-brand'>&nbsp;&nbsp;<i class="fa fa-fort-awesome"></i>&nbsp;&nbsp;{{title}}</a>
     <ul class='nav nav-pills'>
       <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/welcome'><i class="fa fa-home"></i> &nbsp;Home</a></li>
       <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/search/metadata'><i class="fa fa-search"></i> &nbsp;Search Metadata</a></li>
@@ -13,11 +13,10 @@
       <li class="nav-item"><a class='nav-link' routerLinkActive='active' routerLink='/search/integrations'><i class="fa fa-copy"></i> &nbsp;Integrations</a></li>
       <li class="nav-item">
         <div *ngIf="isUserLoggedIn(); else isLogOut">
-          <a class="nav-link" routerLink="/logout">Logout</a>
+          <a class="nav-link" routerLink="/logout"><i class="fa fa-sign-out"></i> &nbsp;Logout</a>
         </div>
-
         <ng-template #isLogOut>
-          <a class="nav-link" routerLink="/login">Login</a>
+          <a class="nav-link" routerLink="/login"><i class="fa fa-sign-in"></i> &nbsp;Login</a>
         </ng-template>
       </li>
     </ul>
