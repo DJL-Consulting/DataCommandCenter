@@ -20,9 +20,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
   searchResult: ObjectSearch[] = [];
   lineagedata: LineageDTO = { nodes: [], flows: [] };
   metadata: MetadataDTO = { servers: [], databases: [], objects: [], columns: [], integrations: [] };
-  defaultSearchSettings: SearchObjectTypes = { SearchType: "Metadata", QueryString: "", Servers: false, Databases: true, Tables: true, Views: true, ProgrammableObjects: true, Columns: true, Integrations: false };
+  metadataSearchSettings: SearchObjectTypes = { SearchType: "Metadata", QueryString: "", Servers: false, Databases: true, Tables: true, Views: true, ProgrammableObjects: true, Columns: true, Integrations: false };
   lineageSearchSettings: SearchObjectTypes = { SearchType: "Lineage", QueryString: "", Servers: false, Databases: false, Tables: true, Views: true, ProgrammableObjects: true, Columns: false, Integrations: true };
-  searchSettings: SearchObjectTypes = this.defaultSearchSettings;
+  searchSettings: SearchObjectTypes = this.metadataSearchSettings;
   searchLineage: boolean = false;
   searchText: string = "";
   lineageRow?: LineageNode = undefined;
@@ -86,7 +86,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     switch (searchType) {
       case "metadata":
         this.searchLineage = false;
-        this.searchSettings = this.defaultSearchSettings;
+        this.searchSettings = this.metadataSearchSettings;
         if (this.hasSearch)
           this.searchSelectEvent(this.searchItem);
         else
@@ -102,12 +102,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
         break;
       case "servers":
         this.searchLineage = false;
-        this.searchSettings = this.defaultSearchSettings;
+        this.searchSettings = this.metadataSearchSettings;
         this.getServers();
         break;
       case "databases":
         this.searchLineage = false;
-        this.searchSettings = this.defaultSearchSettings;
+        this.searchSettings = this.metadataSearchSettings;
         this.getDatabases();
         break;
       case "integrations":
@@ -144,7 +144,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
       this.searchSettings = this.lineageSearchSettings;
     }
     else {
-      this.searchSettings = this.defaultSearchSettings;
+      this.searchSettings = this.metadataSearchSettings;
     }
 
     if (this.hasSearch)
@@ -318,14 +318,27 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     this.lineagedata.nodes.forEach(function (obj) {
       if (!ids.includes(obj.id))
-        nodes.add({ title: tablePopElement, id: "o" + obj.id.toString(), level: obj.level, label: obj.title, widthConstraint: 200, image: ct.pickImage(obj.objectType == null ? '' : obj.objectType), shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
+        nodes.add({ title: tablePopElement, id: "o" + obj.id.toString(), level: obj.level == null ? 0 : obj.level * 2, label: obj.title, widthConstraint: 200, image: ct.pickImage(obj.objectType == null ? '' : obj.objectType), shape: "image", size: 30, chosen: ("o" + obj.id.toString() == sid) })
 
       ids.push(obj.id);
     });
 
     var cnt = 0;
     this.lineagedata.flows.forEach(function (obj) {
-      edges.add({ id: cnt++, to: "o" + obj.sourceObjectId?.toString(), from: "o" + obj.destinationObjectId?.toString(), arrows: "from", title: obj.integrationFlowId == null ? obj.operation : integrationPopElement, color: obj.integrationFlowId == null ? arrowColor : "#FFFF00" }) //label: obj.integrationInfo,
+      if (obj.integrationFlowId != null) {
+        var row1 = ct.lineagedata.nodes.find((sobj) => { return sobj.id.toString() === obj.destinationObjectId?.toString() });
+        var row2 = ct.lineagedata.nodes.find((sobj) => { return sobj.id.toString() === obj.sourceObjectId?.toString() });
+        var lev = row1?.level == null || row2?.level == null ? 0 : (row1?.level + row2?.level);
+ 
+        var nid = "i" + cnt.toString();  //"i" + obj.integrationFlowId.toString() + "-" + cnt.toString();
+        nodes.add({ label: obj.integrationInfo, title: integrationPopElement, id: nid, level: lev, widthConstraint: 200, image: ct.pickImage("integration"), shape: "image", size: 30 })
+        edges.add({ id: cnt, to: nid, from: "o" + obj.destinationObjectId?.toString(), arrows: "from", title: integrationPopElement, color: "#FFFF00" }) 
+        edges.add({ id: 10000 + cnt, to: "o" + obj.sourceObjectId?.toString(), from: nid, arrows: "from", title: integrationPopElement, color: "#FFFF00" }) 
+
+        cnt++;
+      }
+      else
+        edges.add({ id: cnt++, to: "o" + obj.sourceObjectId?.toString(), from: "o" + obj.destinationObjectId?.toString(), arrows: "from", title: obj.integrationFlowId == null ? obj.operation : integrationPopElement, color: obj.integrationFlowId == null ? arrowColor : "#FFFF00" }) //label: obj.integrationInfo,
     });
 
     const data = { nodes, edges };
@@ -397,14 +410,27 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.networkInstance.on("doubleClick", function (params: any) {
       ctx.doubleclick = true;
       if (params.nodes.length) {
-        // Get the lienage for the object
-        var newSearchItem = {
-          objectType: "SQL Table",
-          id: params.nodes[0].substring(1),
-          searchText: "Search Text",
-          displayText: "Display Text"
-        };
-        ctx.searchSelectEvent(newSearchItem);
+        var selId = params.nodes[0];
+        if (selId[0] == "i") {
+          var irow = ctx.lineagedata.flows[selId.substring(1)];
+          var newSearchIntegration = {
+            objectType: "integration",
+            id: irow.integration.id,
+            searchText: "Search Text",
+            displayText: "Display Text"
+          };
+          ctx.searchSelectEvent(newSearchIntegration);
+        }
+        else {
+          // Get the lienage for the object
+          var newSearchItem = {
+            objectType: "SQL Table",
+            id: selId.substring(1),
+            searchText: "Search Text",
+            displayText: "Display Text"
+          };
+          ctx.searchSelectEvent(newSearchItem);
+        }
       }
     });
 
@@ -428,15 +454,24 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     this.networkInstance.on("hoverNode", function (params: any) {
       var selId = params.node;
-      var row = ctx.lineagedata.nodes.find((obj) => { return 'o' + obj.id.toString() === selId; });
+      if (selId[0] == "i") {
+        var irow = ctx.lineagedata.flows[selId.substring(1)]; 
+        ctx.flowRow = irow;
+      }
+      else {
+        var lrow = ctx.lineagedata.nodes.find((obj) => { return 'o' + obj.id.toString() === selId; });
 
-      ctx.lineageRow = row;
+        ctx.lineageRow = lrow;       
+      }
    });
 
     this.networkInstance.on("hoverEdge", function (params: any) {
       var selId = params.edge;
 
-      var row = ctx.lineagedata.flows[selId];
+      if (selId > 10000)
+        selId -= 10000; //adjustment for second edge on integration nodes
+
+      var row = ctx.lineagedata.flows[selId];  
 
       ctx.flowRow = row;
     });
@@ -447,6 +482,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
     //was on("click",....
     this.networkInstance.on("oncontext", function (params: any) {
       params.event.preventDefault();
+
+      console.log(params);
 
       var d = new Date();
 
@@ -459,12 +496,21 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
       if (params.nodes.length) {
         var selId = params.nodes[0];
-        var row = ctx.lineagedata.nodes.find((obj) => { return 'o' + obj.id.toString() === selId; });
+        if (selId[0] == "i") {
+          var irow = ctx.lineagedata.flows[selId.substring(1)];
+          ctx.intRow = irow.integration;
+          ctx.open(ctx.idialog);
+          return;
+        }
+        else {
+          var row = ctx.lineagedata.nodes.find((obj) => { return 'o' + obj.id.toString() === selId; });
 
-        ctx.lineageRow = row;
+          ctx.lineageRow = row;
 
-        ctx.open(ctx.ldialog);
-        return;
+          ctx.open(ctx.ldialog);
+          return;
+        }
+
       }
       if (params.edges.length) {
         var selId = params.edges[0];

@@ -239,7 +239,7 @@ namespace DataCommandCenter.DAL.Services
                     l1 = l2;
                 }
 
-                var flows = allFlows.SelectMany(x => x).ToList();
+                var flows = allFlows.SelectMany(x => x).Distinct().ToList();
 
                 return (flows, allObjects);
             }
