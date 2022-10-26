@@ -48,6 +48,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   @ViewChild('lineageModal') ldialog!: ElementRef;
   @ViewChild('integrationModal') fdialog!: ElementRef;
   @ViewChild('network') el!: ElementRef;
+  //@ViewChild('popupDetail') tablePop!: ElementRef;
   @ViewChild('popupTable') tablePop!: ElementRef;
   @ViewChild('popupServer') serverPop!: ElementRef;
   @ViewChild('popupDatabase') databasePop!: ElementRef;
@@ -55,6 +56,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
   @ViewChild('popupColumn') columnPop!: ElementRef;
   @ViewChild('popupIntegration') integrationPop!: ElementRef;
   @ViewChild('popupInt') intPop!: ElementRef;
+
+  includeProperties = ["objectName", "schemaName", "objectType"];
   
   sub!: Subscription;
   searchType!: string;
@@ -295,13 +298,26 @@ export class SearchComponent implements OnInit, AfterViewInit {
     return { unselected: 'assets/images/proc.png', selected: 'assets/images/proc-sel.png' };
   }
 
+  pascalToDisplay(text: string, remove: string = ""): string {
+    var result = text.replace(/([A-Z])/g, " $1");
+
+    if (remove != "")1
+      result = result.replace(remove, "");
+
+    return result.charAt(0).toUpperCase() + result.slice(1);
+  }
+
+  displayColumn(column: string): string {
+    return this.includeProperties.includes(column) ? this.pascalToDisplay(column) : "";
+  }
+
   drawLineagedata(): void {
     const tablePopElement = this.tablePop.nativeElement;
 
     const container = this.el.nativeElement;
     const integrationPopElement = this.integrationPop.nativeElement;
 
-    const arrowColor = { color: "#97C2FC", opacity: 0.4, highlight: "#00CC00" };  // color: "#97C2FC", highlight: "red"
+    const arrowColor = { color: "#97C2FC", opacity: 0.4, highlight: "#00CC00" };  
 
     var sid = ((this.searchItem?.objectType.toUpperCase() == "INTEGRATION") ? "i" : "o") + this.searchItem?.id.toString();
 
@@ -483,8 +499,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.networkInstance.on("oncontext", function (params: any) {
       params.event.preventDefault();
 
-      console.log(params);
-
       var d = new Date();
 
       if (d.getTime() - ctx.lastclick < 1000) 
@@ -588,7 +602,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.metadata.integrations.forEach(function (obj) {
       iCount++;
       nodes.add({ id: "i" + obj.id.toString(), title: ct.intPop.nativeElement, x: (iCount % 6) * 200, y: Math.floor(iCount / 8) * 150,  label: obj.name, widthConstraint: maxWidth+200, image: ct.pickImage("integration"), shape: "image", size: 30, chosen: ("i" + obj.id.toString() == sid) })
-      //edges.add({ from: "o" + obj.id.toString(), to: "d" + obj.databaseId?.toString(), arrows: "to", color: arrowColor })
     });
 
     const data = { nodes, edges };
@@ -782,9 +795,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         }
       }
     });
-
-
   }
-
 
 }
